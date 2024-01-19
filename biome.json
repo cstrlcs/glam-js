@@ -10,7 +10,7 @@
 			"complexity": {
 				"noExcessiveCognitiveComplexity": "error",
 				"noVoid": "error"
-			}, 
+			},
 			"correctness": {
 				"noNewSymbol": "error",
 				"noUndeclaredVariables": "warn",
@@ -19,7 +19,6 @@
 			"style": {
 				"useBlockStatements": "error",
 				"useCollapsedElseIf": "error",
-				"useConsistentArrayType": "error",
 				"useShorthandArrayType": "error",
 				"useShorthandAssign": "error"
 			},
