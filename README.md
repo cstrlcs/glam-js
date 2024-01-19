@@ -1,9 +1,5 @@
 # glam-js
 
-<span align="center">
-
-</span>
-
 A simple and fast 3D math library for games and graphics.
 
 
