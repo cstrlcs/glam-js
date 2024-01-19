@@ -1,0 +1,6 @@
+// <%= warn.replace("<template>", "templates/index.eta") %>
+
+
+<% for (const item of it) { %>
+export { <%= `${item.name}${item.length}` %> } from "./<%= `${item.name}${item.length}` %>";
+<% } %>

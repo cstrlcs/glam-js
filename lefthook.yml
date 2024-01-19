@@ -1,0 +1,7 @@
+pre-commit:
+  commands:
+    test:
+      run: bun test
+    check:
+      glob: "*.{js,ts, json}"
+      run: npx biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}

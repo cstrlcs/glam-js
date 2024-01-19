@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"paths": {
+			"@": ["./src"],
+			"@/codegen": ["./codegen"],
+		},
+		"lib": ["ESNext"],
+		"module": "esnext",
+		"target": "esnext",
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "node",
+		"moduleDetection": "force",
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"strict": true,
+		"removeComments": false,
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"types": ["bun-types"]
+	}
+}

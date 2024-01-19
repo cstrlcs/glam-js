@@ -1,0 +1,686 @@
+// <%= warn.replace("<template>", it.template) %>
+
+
+<% 
+	const properties = ["x", "y", "z", "w",].splice(0, it.length);
+	const type = `${it.name}${it.length}`;
+%>
+import { <%= ["Vec2", "Vec3", "Vec4", "BVec2", "BVec3", "BVec4"].filter(value => value !== type).join(", ") %> } from "./";
+
+export class <%= type %> {
+	constructor(
+<% for (const property of properties) { %>
+		public <%= property %>: number,
+<% } %>
+	) {}
+
+  /** All zeroes. */
+	static ZERO = <%= type %>.splat(0);
+
+	/** All ones. */
+	static ONE = <%= type %>.splat(1);
+
+	/** All negative ones. */
+	static NEG_ONE = <%= type %>.splat(-1);
+
+	/** All `Number.MIN_VALUE`. */
+	static MIN = <%= type %>.splat(Number.MIN_VALUE);
+
+	/** All `Number.MAX_VALUE`. */
+	static MAX = <%= type %>.splat(Number.MAX_VALUE);
+
+	/** All `NaN`. */
+	static NAN = <%= type %>.splat(NaN);
+
+	/** All `Infinity`. */
+	static INFINITY = <%= type %>.splat(Infinity);
+
+	/** All `-Infinity`. */
+	static NEG_INFINITY = <%= type %>.splat(-Infinity);
+
+<% for (const [index, value] of properties.entries()) { %>
+	/** A unit vector pointing along the positive <%= value.toUpperCase() %> axis. */
+	static <%= value.toUpperCase() %> = new <%= type %>(<%= properties.map((value, index2) => index === index2 ? '1' : '0').join(', ') %>);
+
+<% } %>
+<% for (const [index, value] of properties.entries()) { %>
+	/** A unit vector pointing along the negative <%= value.toUpperCase() %> axis. */
+	static NEG_<%= value.toUpperCase() %> = new <%= type %>(<%= properties.map((value, index2) => index === index2 ? '-1' : '0').join(', ') %>);
+
+<% } %>
+	/** The unit axes. */
+	static AXES = [<%= properties.map(value => `${type}.${value.toUpperCase()}`).join(", ") %>];
+
+	/** Creates a vector with all elements set to v. */
+	static splat(v: number): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => 'v').join(', ') %>);
+	}
+
+	/**
+	 * Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use for each element.
+	 * A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`.
+	 */
+	static select(mask: B<%= type %>, ifTrue: <%= type %>, ifFalse: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const [index, value] of properties.entries()) { %>
+			mask.test(<%= index %>) ? ifTrue.<%= value %> : ifFalse.<%= value %>,
+<% } %>
+		);
+	}
+
+	/** Creates a new vector from an array. */
+	static fromArray(a: [<%= properties.map(_ => 'number').join(', ') %>]): <%= type %> {
+		return new <%= type %>(<%= properties.map((_, index) => `a[${index}]`).join(', ') %>);
+	}
+
+	/** [<%= properties.join(', ') %>] */
+	toArray(): [<%= properties.map(value => `number`).join(', ') %>] {
+		return [<%= properties.map(value => `this.${value}`).join(', ') %>];
+	}
+
+<% if (it.extend) { %>
+	/** Creates a `<%= `${it.name}${it.length + 1}` %>` vector from `<%= type %>` and the given `value` value. */
+	extend(value: number): <%= `${it.name}${it.length + 1}` %> {
+		return new <%= `${it.name}${it.length + 1}` %>(<%= properties.map(value => `this.${value}`).join(", ") %>, value);
+	}
+
+<% } %>
+<% if (it.truncate) { %>
+	/** Creates a `<%= `${ `${it.name}${it.length - 1}` }` %>` vector from `<%= type %>` */
+	truncate(): <%= `${it.name}${it.length - 1}` %> {
+		return new <%= `${it.name}${it.length - 1}` %>(<%= properties.slice(0, -1).map(value => `this.${value}`).join(", ") %>);
+	}
+
+<% } %>
+	/** Computes the dot product of `<%= type %>` and `rhs`. */
+	dot(rhs: <%= type %>): number {
+		return <%= properties.map(value => `this.${value} * rhs.${value}`).join(' + ') %>;
+	}
+
+	/** Returns a vector where every component is the dot product of `Vec3` and `rhs`. */
+	dotIntoVec(rhs: <%= type %>): <%= type %> {
+		return <%= type %>.splat(this.dot(rhs));
+	}
+
+<% if (type === "Vec3") { %>
+	/** Computes the cross product of `Vec3` and `rhs`. */
+	cross(rhs: Vec3): Vec3 {
+		return new Vec3(
+			this.y * rhs.z - this.z * rhs.y,
+			this.z * rhs.x - this.x * rhs.z,
+			this.x * rhs.y - this.y * rhs.x,
+		);
+	}
+
+<% } %>
+	/** 
+	 * Returns a vector containing the minimum values for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `Math.min(this.x, rhs.x), Math.min(this.y, rhs.y)..`.
+	 */
+	min(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.min(this.${value}, rhs.${value})`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector containing the maximum values for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `Math.max(this.x, rhs.x), Math.max(this.y, rhs.y)..`.
+	 */
+	max(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.max(this.${value}, rhs.${value})`).join(", ") %>);
+	}
+
+	/** Component-wise clamping of values. */
+	clamp(min: <%= type %>, max: <%= type %>): <%= type %> {
+		return this.max(min).min(max);
+	}
+
+	/** 
+	 * Returns the horizontal minimum of `<%= type %>`.
+	 * In other words this computes `Math.min(x, y..)`. 
+	 */
+	minElement(): number {
+		return Math.min(<%= properties.map(value => `this.${value}`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns the horizontal maximum of `<%= type %>`.
+	 * In other words this computes `Math.max(x, y, ..)`.
+	 */
+	maxElement(): number {
+		return Math.max(<%= properties.map(value => `this.${value}`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector mask containing the result of a `==` comparison for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `[this.x == rhs.x, this.y == rhs.y..]` for all elements. 
+	 */
+	cmpeq(rhs: <%= type %>): B<%= type %> {
+		return new B<%= type %>(<%= properties.map(value => `this.${value} === rhs.${value}`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector mask containing the result of a `!=` comparison for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `[this.x != rhs.x, this.y != rhs.y..]` for all elements. 
+	 */
+	cmpne(rhs: <%= type %>): B<%= type %> {
+		return new B<%= type %>(<%= properties.map(value => `this.${value} !== rhs.${value}`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector mask containing the result of a `>=` comparison for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `[this.x >= rhs.x, this.y >= rhs.y..]` for all elements. 
+	 */
+	cmpge(rhs: <%= type %>): B<%= type %> {
+		return new B<%= type %>(<%= properties.map(value => `this.${value} >= rhs.${value}`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector mask containing the result of a `>` comparison for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `[this.x > rhs.x, this.y > rhs.y..]` for all elements. 
+	 */
+	cmpgt(rhs: <%= type %>): B<%= type %> {
+		return new B<%= type %>(<%= properties.map(value => `this.${value} > rhs.${value}`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector mask containing the result of a `<=` comparison for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `[this.x <= rhs.x, this.y <= rhs.y..]` for all elements. 
+	 */
+	cmple(rhs: <%= type %>): B<%= type %> {
+		return new B<%= type %>(<%= properties.map(value => `this.${value} <= rhs.${value}`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector mask containing the result of a `<` comparison for each element of `<%= type %>` and `rhs`.
+	 * In other words this computes `[this.x < rhs.x, this.y < rhs.y..]` for all elements. 
+	 */
+	cmplt(rhs: <%= type %>): B<%= type %> {
+		return new B<%= type %>(<%= properties.map(value => `this.${value} < rhs.${value}`).join(", ") %>);
+	}
+
+	/** Returns a vector containing the absolute value of each element of `Vec3`. */
+	abs(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.abs(this.${value})`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a vector with elements representing the sign of `<%= type %>`.
+	 * - `1` if the number is positive, `+0` or `INFINITY`
+	 * - `-1` if the number is negative, `-0` or `NEG_INFINITY`	
+	 */
+	signum(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.sign(this.${value})`).join(", ") %>);
+	}
+
+	/** 
+	 * Returns a bitmask with the lowest 2 bits set to the sign bits from the elements of `<%= type %>`.
+	 * A negative element results in a `1` bit and a positive element in a `0` bit.  Element `x` goes
+	 * into the first lowest bit, element `y` into the second, etc.
+	 */
+	isNegativeBitmask(): number {
+		return <%= properties.map((value, index) => `(Number(this.${value} < 0)${index > 0 ? ` << ${index}` : ''})`).join(' | ') %>;
+	}
+
+	/** Returns `true` if, and only if, all elements are finite. If any element is either `NaN`, positive or negative infinity, this will return `false`. */
+	isFinite(): boolean {
+		return <%= properties.map(value => `Number.isFinite(this.${value})`).join(" && ") %>;
+	}
+
+	/** Returns `true` if any elements are `NaN`. */
+	isNaN(): boolean {
+		return <%= properties.map(value => `Number.isNaN(this.${value})`).join(" || ") %>;
+	}
+
+	/** 
+	 * Performs `isNaN` on each element of  returning a vector mask of the results.
+	 * In other words, this computes `[Number.isNaN(x), Number.isNaN(y)..]`.
+	 */
+	isNaNMask(): B<%= type %> {
+		return new B<%= type %>(<%= properties.map(value => `Number.isNaN(this.${value})`).join(", ") %>);
+	}
+
+	/** Computes the length of `<%= type %>`. */
+	length(): number {
+		return Math.sqrt(this.dot(this));
+	}
+
+	/** Computes the squared length of `<%= type %>`.
+	 * This is faster than `length()` as it avoids a square root operation.
+	 */
+	lengthSquared(): number {
+		return this.dot(this);
+	}
+
+	/** 
+	 * Computes `1 / length()`.
+	 * For valid results, `<%= type %>` must _not_ be of length zero.
+	 */
+	lengthRecip(): number {
+		return 1 / this.length();
+	}
+
+	/** Computes the Euclidean distance between two points in space. */
+	distance(rhs: <%= type %>): number {
+		return this.sub(rhs).length();
+	}
+
+	/** Compute the squared euclidean distance between two points in space. */
+	distanceSquared(rhs: <%= type %>): number {
+		return this.sub(rhs).lengthSquared();
+	}
+
+	/** Returns the element-wise quotient of [Euclidean division] of `<%= type %>` by `rhs`. */
+	divEuclid(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.floor(this.${value} / rhs.${value})`).join(', ') %>);
+	}
+
+	/** Returns the element-wise remainder of [Euclidean division] of `<%= type %>` by `rhs`. */
+	remEuclid(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `this.${value} % rhs.${value}`).join(', ') %>);
+	}
+
+	/** 
+	 * Returns `<%= type %>` normalized to length 1.
+	 * For valid results, `<%= type %>` must _not_ be of length zero, nor very close to zero.
+	 */
+	normalize(): <%= type %> {
+		return this.mul(this.lengthRecip());
+	}
+
+	/** 
+	 * Returns `<%= type %>` normalized to length 1 if possible, else returns zero.
+	 * In particular, if the input is zero (or very close to zero), or non-finite,
+	 * the result of this operation will be zero.
+	 */
+	normalizeOrZero(): <%= type %> {
+		const rcp = this.lengthRecip();
+
+		if (Number.isFinite(rcp) && rcp > 0) {
+			return this.mul(rcp);
+		}
+
+		return <%= type %>.ZERO;
+	}
+
+	/** 
+	 * Returns whether `<%= type %>` is length `1` or not.
+	 * Uses a precision threshold of `1e-4`.
+	 */
+	isNormalized(): boolean {
+		return Math.abs(this.lengthSquared() - 1) <= 1e-4;
+	}
+
+	/** 
+	 * Returns the vector projection of `<%= type %>` onto `rhs`.
+	 * `rhs` must be of non-zero length.
+	 */
+	projectOnto(rhs: <%= type %>): <%= type %> {
+		const otherLenSqRcp = 1 / rhs.dot(rhs);
+		return rhs.mul(this.dot(rhs) * otherLenSqRcp);
+	}
+
+	/** 
+	 * Returns the vector rejection of `<%= type %>` from `rhs`.
+	 * The vector rejection is the vector perpendicular to the projection of `<%= type %>` onto
+	 * `rhs`, in rhs words the result of `<%= type %> - this.project_onto(rhs)`.
+	 * `rhs` must be of non-zero length.
+	 */
+	rejectFrom(rhs: <%= type %>): <%= type %> {
+		return this.sub(this.projectOnto(rhs));
+	}
+
+	/** 
+	 * Returns the vector projection of `<%= type %>` onto `rhs`.
+	 * `rhs` must be normalized.
+	 */
+	projectOntoNormalized(rhs: <%= type %>): <%= type %> {
+		return rhs.mul(this.dot(rhs));
+	}
+
+	/** 
+	 * Returns the vector rejection of `<%= type %>` from `rhs`.
+	 * The vector rejection is the vector perpendicular to the projection of `<%= type %>` onto
+	 * `rhs`, in rhs words the result of `<%= type %>.sub(this.projectOnto(rhs))`.
+	 * `rhs` must be normalized.
+	 */
+	rejectFromNormalized(rhs: <%= type %>): <%= type %> {
+		return this.sub(this.projectOntoNormalized(rhs));
+	}
+
+	/** 
+	 * Returns a vector containing the nearest integer to a number for each element of `<%= type %>`.
+	 * Round half-way cases away from 0.
+	 */
+	round(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.round(this.${value})`).join(', ') %>);
+	}
+
+	/** 
+	 * Returns a vector containing the largest integer less than or equal to a number for each
+	 * element of `<%= type %>`.
+	 */
+	floor(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.floor(this.${value})`).join(', ') %>);
+	}
+
+	/** 
+	 * Returns a vector containing the smallest integer greater than or equal to a number for
+	 * each element of `<%= type %>`.
+	 */
+	ceil(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.ceil(this.${value})`).join(', ') %>);
+	}
+
+	/** 
+	 * Returns a vector containing the integer part each element of `<%= type %>`. This means numbers are
+	 * always truncated towards zero.
+	 */
+	trunc(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.trunc(this.${value})`).join(', ') %>);
+	}
+
+	/** 
+	 * Returns a vector containing the fractional part of the vector, e.g. `<%= type %> -
+	 * this.floor()`.
+	 * Note that this is fast but not precise for large numbers.
+	 */
+	fract(): <%= type %> {
+		return this.sub(this.floor());
+	}
+
+	/** Returns a vector containing `e^<%= type %>` (the exponential function) for each element of `<%= type %>`. */
+	exp(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `Math.exp(this.${value})`).join(', ') %>);
+	}
+
+	/** Returns a vector containing each element of `<%= type %>` raised to the power of `n`. */
+	powf(n: number): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `this.${value} ** n`).join(', ') %>);
+	}
+
+	/** Returns a vector containing the reciprocal `1/n` of each element of `<%= type %>`. */
+	recip(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `1 / this.${value}`).join(', ') %>);
+	}
+
+	/** 
+	 * Performs a linear interpolation between `<%= type %>` and `rhs` based on the value `s`.
+	 * When `s` is `0`, the result will be equal to `<%= type %>`.  When `s` is `1`, the result
+	 * will be equal to `rhs`. When `s` is outside of range `[0, 1]`, the result is linearly
+	 * extrapolated.
+	 */
+	lerp(rhs: <%= type %>, s: number): <%= type %> {
+		return this.add(rhs.sub(this).mul(s));
+	}
+
+	/** 
+	 * Calculates the midpoint between `<%= type %>` and `rhs`.
+	 * The midpoint is the average of, or halfway point between, two vectors.
+	 * `a.midpoint(b)` should yield the same result as `a.lerp(b, 0.5)`
+	 * while being slightly cheaper to compute.
+	 */
+	midpoint(rhs: <%= type %>): <%= type %> {
+		return this.add(rhs).mul(0.5);
+	}
+
+	/** 
+	 * Returns true if the absolute difference of all elements between `<%= type %>` and `rhs` is
+	 * less than or equal to `maxAbsDiff`.
+	 * This can be used to compare if two vectors contain similar elements. It works best when
+	 * comparing with a known value. The `maxAbsDiff` that should be used used depends on
+	 * the values being compared against.
+	 * For more see
+	 * [comparing floating point numbers](https:/**randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/).
+	*/
+	absDiffEq(rhs: <%= type %>, maxAbsDiff: number): boolean {
+		return this.sub(rhs).abs().cmple(<%= type %>.splat(maxAbsDiff)).all();
+	}
+
+	/** Returns a vector with a length no less than `min` and no more than `max`. */
+	clampLength(min: number, max: number): <%= type %> {
+		const lengthSq = this.lengthSquared();
+
+		if (lengthSq < min * min) {
+			return this.div(Math.sqrt(lengthSq)).mul(min);
+		}
+
+		if (lengthSq > max * max) {
+			return this.div(Math.sqrt(lengthSq)).mul(max);
+		}
+
+		return this;
+	}
+
+	/** Returns a vector with a length no more than `max`. */
+	clampLengthMax(max: number): <%= type %> {
+		const lengthSq = this.lengthSquared();
+
+		if (lengthSq > max * max) {
+			return this.div(Math.sqrt(lengthSq)).mul(max);
+		}
+
+		return this;
+	}
+
+	/** Returns a vector with a length no less than `min`.  */
+	clampLengthMin(min: number): <%= type %> {
+		const lengthSq = this.lengthSquared();
+
+		if (lengthSq < min * min) {
+			return this.div(Math.sqrt(lengthSq)).mul(min);
+		}
+
+		return this;
+	}
+
+	/** 
+	 * Fused multiply-add. Computes `(<%= type %> * a) + b` element-wise with only one rounding
+	 * error, yielding a more accurate result than an unfused multiply-add.
+	 */
+	mulAdd(a: <%= type %>, b: <%= type %>): <%= type %> {
+		return this.mul(a).add(b);
+	}
+
+<% if (type === "Vec2") { %>
+	/** 
+	 * Creates a 2D vector containing `[Math.cos(angle), Math.sin(angle)]`. This can be used in
+	 * conjunction with the [`rotate()`][Vec2.rotate()] method, e.g.
+	 * `Vec2.fromAngle(PI).rotate(Vector.Y)` will create the vector `[-1, 0]`
+	 * and rotate [`Vector.Y`] around it returning `Vector.Y.neg()`.
+	 */
+	static fromAngle(angle: number): Vec2 {
+		const [cos, sin] = [Math.cos(angle), Math.sin(angle)];
+		return new Vec2(cos, sin);
+	}
+
+	/** 
+	 * Returns the angle (in radians) of this vector in the range `[-π, +π]`.
+	 * The input does not need to be a unit vector however it must be non-zero.
+	 */
+	toAngle(): number {
+		return Math.atan2(this.y, this.x);
+	}
+
+<% } %>
+	/** 
+	 * Returns the angle (in radians) between `<%= type %>` and `rhs` in the range `[-π, +π]`.
+	 * The inputs do not need to be unit vectors however they must be non-zero.
+	 */
+	angleBetween(rhs: <%= type %>): number {
+		const angle = Math.acos(
+			this.dot(rhs) / Math.sqrt(this.lengthSquared() * rhs.lengthSquared()),
+		);
+
+<% if (type === "Vec2") { %>
+		return angle * Math.sign(this.perpDot(rhs));
+<% } else { %>
+		return angle;
+<% } %>
+	}
+
+<% if (type === "Vec2") { %>
+	/** Returns a vector that is equal to `Vec2` rotated by 90 degrees. */
+	perp(): Vec2 {
+		return new Vec2(-this.y, this.x);
+	}
+
+	/** 
+	 * The perpendicular dot product of `Vec2` and `rhs`.
+	 * Also known as the wedge product, 2D cross product, and determinant.
+	 */
+	perpDot(rhs: Vec2): number {
+		return this.x * rhs.y - this.y * rhs.x;
+	}
+
+	/** 
+	 * Returns `rhs` rotated by the angle of `Vec2`. If `Vec2` is normalized,
+	 * then this just rotation. This is what you usually want. Otherwise,
+	 * it will be like a rotation with a multiplication by `Vec2`'s length.
+	 */
+	rotate(rhs: Vec2): Vec2 {
+		return new Vec2(
+			this.x * rhs.x - this.y * rhs.y,
+			this.y * rhs.x + this.x * rhs.y,
+		);
+	}
+
+<% } %>
+<% if (type === "Vec3") { %>
+	/**
+	 * Returns some vector that is orthogonal to the given one.
+	 * The input vector must be finite and non-zero.
+	 * The output vector is not necessarily unit length. For that use [`anyOrthonormalVector()`] instead.
+	 */
+	anyOrthogonalVector() {
+		if (Math.abs(this.x) > Math.abs(this.y)) {
+			return new Vec3(-this.z, 0, this.x);
+		}
+
+		return new Vec3(0, this.z, -this.y);
+	}
+
+	/** 
+	 * Returns any unit vector that is orthogonal to the given one.
+	 * The input vector must be unit length.
+	 */
+	anyOrthonormalVector() {
+		// From https://graphics.pixar.com/library/OrthonormalB/paper.pdf
+		const sign = Math.sign(this.z);
+		const a = -1 / (sign + this.z);
+		const b = this.x * this.y * a;
+		return new Vec3(b, sign + this.y * this.y * a, -this.y);
+	}
+
+	/** 
+	 * Given a unit vector return two other vectors that together form an orthonormal
+	 * basis. That is, all three vectors are orthogonal to each other and are normalized.
+	 */
+	anyOrthonormalPair() {
+		// From https://graphics.pixar.com/library/OrthonormalB/paper.pdf
+		const sign = Math.sign(this.z);
+		const a = -1 / (sign + this.z);
+		const b = this.x * this.y * a;
+
+		return [
+			new Vec3(1 + sign * this.x * this.x * a, sign * b, -sign * this.x),
+			new Vec3(b, sign + this.y * this.y * a, -this.y),
+		];
+	}
+
+<% } %>
+	/** 
+	 * Divides a <%= type %> by another Vector, or by a number
+	 * (this.x / rhs.x, this.y / rhs.y) or (this.x / rhs, this.y / rhs).
+	 */
+	div(rhs: <%= type %> | number): <%= type %> {
+		if (rhs instanceof <%= type %>) {
+			return new <%= type %>(<%= properties.map(value => `this.${value} / rhs.${value}`).join(', ') %>);
+		}
+
+		return new <%= type %>(<%= properties.map(value => `this.${value} / rhs`).join(', ') %>);
+	}
+
+	/**
+	 * Multiplies a <%= type %> by another Vector, or by a number
+	 * (this.x * rhs.x, this.y * rhs.y..) or (this.x * rhs, this.y * rhs..).
+	 */
+	mul(rhs: <%= type %> | number): <%= type %> {
+		if (rhs instanceof <%= type %>) {
+			return new <%= type %>(<%= properties.map(value => `this.${value} * rhs.${value}`).join(', ') %>);
+		}
+
+		return new <%= type %>(<%= properties.map(value => `this.${value} * rhs`).join(', ') %>);
+	}
+
+	/** 
+	 * Sums a <%= type %> by another Vector, or by a number
+	 * (this.x + rhs.x, this.y + rhs.y..) or (this.x + rhs, this.y + rhs..)
+	 */
+	add(rhs: <%= type %> | number): <%= type %> {
+		if (rhs instanceof <%= type %>) {
+			return new <%= type %>(<%= properties.map(value => `this.${value} + rhs.${value}`).join(', ') %>);
+		}
+
+		return new <%= type %>(<%= properties.map(value => `this.${value} + rhs`).join(', ') %>);
+	}
+
+	/**
+	 * Subtracts a <%= type %> by another Vector, or by a number
+	 * (this.x - rhs.x, this.y - rhs.y..) or (this.x - rhs, this.y - rhs..)
+	 */
+	sub(rhs: <%= type %> | number): <%= type %> {
+		if (rhs instanceof <%= type %>) {
+			return new <%= type %>(<%= properties.map(value => `this.${value} - rhs.${value}`).join(', ') %>);
+		}
+
+		return new <%= type %>(<%= properties.map(value => `this.${value} - rhs`).join(', ') %>);
+	}
+
+	/**
+	 * Divides a <%= type %> by another Vector, or by a number and return its remainder
+	 * (this.x % rhs.x, this.y % rhs.y..) or (this.x % rhs, this.y % rhs..)
+	 */
+	rem(rhs: <%= type %> | number): <%= type %> {
+		if (rhs instanceof <%= type %>) {
+			return new <%= type %>(<%= properties.map(value => `this.${value} % rhs.${value}`).join(', ') %>);
+		}
+
+		return new <%= type %>(<%= properties.map(value => `this.${value} % rhs`).join(', ') %>);
+	}
+
+	/** Returns (-this.x, -this.y..) */
+	neg(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `-this.${value}`).join(', ') %>);
+	}
+
+	/** Compares if the vector is equal to another. */
+	eq(rhs: <%= type %> | number): boolean {
+		if (rhs instanceof <%= type %>) {
+			return <%= properties.map(value => `this.${value} === rhs.${value}`).join(' && ') %>;
+		}
+
+		return <%= properties.map(value => `this.${value} === rhs`).join(' && ') %>;
+	}
+
+	/** Compares if the vector is not equal to another. */
+	ne(rhs: <%= type %> | number): boolean {
+		if (rhs instanceof <%= type %>) {
+			return <%= properties.map(value => `this.${value} !== rhs.${value}`).join(' || ') %>;
+		}
+
+		return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
+	}
+
+	/** Compares if the vector is approximately equal to another, by the threshold of 1e-6. */
+	approxEq(rhs: <%= type %> | number): boolean {
+		const threshold = 1e-6;
+
+		if (rhs instanceof <%= type %>) {
+			return <%= properties.map(value => `Math.abs(this.${value} - rhs.${value}) < threshold`).join(' && ') %>;
+		}
+
+		return <%= properties.map(value => `Math.abs(this.${value} - rhs) < threshold`).join(' && ') %>;
+	}
+
+<%~ include("./swizzle", it) %>
+}

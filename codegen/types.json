@@ -1,0 +1,42 @@
+[
+	{
+		"name": "BVec",
+		"template": "templates/bvec.eta",
+		"description": "A 2-dimensional boolean vector.",
+		"length": 2
+	},
+	{
+		"name": "BVec",
+		"template": "templates/bvec.eta",
+		"description": "A 3-dimensional boolean vector.",
+		"length": 3
+	},
+	{
+		"name": "BVec",
+		"template": "templates/bvec.eta",
+		"description": "A 4-dimensional boolean vector.",
+		"length": 4
+	},
+	{
+		"name": "Vec",
+		"template": "templates/vec.eta",
+		"description": "A 2-dimensional vector.",
+		"length": 2,
+		"extend": true
+	},
+	{
+		"name": "Vec",
+		"template": "templates/vec.eta",
+		"description": "A 3-dimensional vector.",
+		"length": 3,
+		"extend": true,
+		"truncate": true
+	},
+	{
+		"name": "Vec",
+		"template": "templates/vec.eta",
+		"description": "A 4-dimensional vector.",
+		"length": 4,
+		"truncate": true
+	}
+]

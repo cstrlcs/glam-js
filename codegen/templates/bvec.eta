@@ -1,0 +1,108 @@
+// <%= warn.replace("<template>", it.template) %>
+
+
+<% 
+	const properties = ["x", "y", "z", "w",].splice(0, it.length);
+	const type = `${it.name}${it.length}`;
+%>
+import { <%= ["BVec2", "BVec3", "BVec4"].filter(value => value !== type).join(", ") %> } from "./";
+
+export class <%= type %> {
+	constructor(
+<% for (const property of properties) { %>
+		public <%= property %>: boolean,
+<% } %>
+	) {}
+
+  /** All false. */
+	static FALSE = <%= type %>.splat(false);
+
+	/** All true. */
+	static TRUE = <%= type %>.splat(true);
+
+	/** Creates a vector with all elements set to v. */
+	static splat(v: boolean): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => 'v').join(', ') %>);
+	}
+
+	/**
+	 * Returns a bitmask with the lowest 2 bits set from the elements of <%= type %>.
+	 * A true element results in a 1 bit and a false element in a 0 bit. Element x goes into the first lowest bit, element y into the second, etc.
+	 */
+	bitmask(): number {
+		return <%= properties.map((value, index) => `(Number(this.${value})${index > 0 ? ` << ${index}` : ''})`).join(' | ') %>;
+	}
+
+	/** Returns true if any of the elements are true, false otherwise. */
+	any(): boolean {
+		return <%= properties.map(value => `this.${value}`).join(' || ') %>;
+	}
+
+	/** Returns true if all the elements are true, false otherwise. */
+	all(): boolean {
+		return <%= properties.map(value => `this.${value}`).join(' && ') %>;
+	}
+
+	/** Tests the value at index. */
+	test(index: <%= [...Array(it.length).keys()].join(" | ") %>): boolean {
+		return [<%= properties.map(value => `this.${value}`).join(", ") %>][index];
+	}
+
+	/** Sets the element at index. */
+	set(index: <%= [...Array(it.length).keys()].join(" | ") %>, value: boolean): void {
+		const property = [<%= properties.map(value => `"${value}"`).join(", ") %>][index] as <%= properties.map(value => `"${value}"`).join(" | ") %>;
+		this[property] = value;
+	}
+
+	/** Performs the & operation. */
+	bitand(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const property of properties) { %>
+			Boolean(Number(this.<%= property %>) & Number(rhs.<%= property %>)),
+<% } %>
+		);
+	}
+
+	/** Performs the | operation. */
+	bitor(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const property of properties) { %>
+			Boolean(Number(this.<%= property %>) | Number(rhs.<%= property %>)),
+<% } %>
+		);
+	}
+
+	/** Performs the ^ operation. */
+	bitxor(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const property of properties) { %>
+			Boolean(Number(this.<%= property %>) ^ Number(rhs.<%= property %>)),
+<% } %>
+		);
+	}
+
+	/** Returns the negation. */
+	not(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `!this.${value}`).join(', ') %>);
+	}
+
+	/** This method tests for self and other values to be equal, and is used by ==. */
+	eq(rhs: <%= type %> | boolean): boolean {
+		if (rhs instanceof <%= type %>) {
+			return <%= properties.map(value => `this.${value} === rhs.${value}`).join(' && ') %>;
+		}
+
+		return <%= properties.map(value => `this.${value} === rhs`).join(' && ') %>;
+	}
+
+	/** This method tests for !=. */
+	ne(rhs: <%= type %> | boolean): boolean {
+		if (rhs instanceof <%= type %>) {
+			return <%= properties.map(value => `this.${value} !== rhs.${value}`).join(' || ') %>;
+		}
+
+		return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
+	}
+
+<%~ include("./swizzle", it) %>
+}
