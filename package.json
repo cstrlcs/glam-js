@@ -1,18 +1,23 @@
 {
 	"name": "glam-js",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
 	"version": "0.0.1",
-	"description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
-	"scripts": {
-		"codegen": "bun ./codegen",
-		"build:js": "bun build ./src/index.ts --outdir ./dist --minify",
-		"build:declaration": "tsc --declaration --emitDeclarationOnly --outDir ./dist ./src/index.ts",
-		"release": "bun codegen && bun build:js && bun build:declaration",
-		"coverage": "bun test --coverage 2>&1 | tee coverage",
-		"postinstall": "lefthook install"
+	"author": "Lucas Castro <contact@lucascastro.dev>, Cameron Hart <cameron.hart@gmail.com> (glam-rs)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/cstrlcs/glam-js.git"
 	},
+	"main": "dist/index.js",
+	"devDependencies": {
+		"@biomejs/biome": "latest",
+		"bun-types": "latest",
+		"eta": "3.2.0",
+		"lefthook": "latest",
+		"typescript": "latest"
+	},
+	"bugs": "https://github.com/cstrlcs/glam-js/issues",
+	"description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
 	"files": ["dist"],
+	"homepage": "https://github.com/cstrlcs/glam-js#readme",
 	"keywords": [
 		"gamedev",
 		"math",
@@ -24,18 +29,12 @@
 		"game-engines"
 	],
 	"license": "MIT or Apache-2.0",
-	"homepage": "https://github.com/cstrlcs/glam-js#readme",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/cstrlcs/glam-js.git"
+	"scripts": {
+		"codegen": "bun ./codegen",
+		"build:js": "bun build ./src/index.ts --outdir ./dist --minify",
+		"build:declaration": "tsc --declaration --emitDeclarationOnly --outDir ./dist ./src/index.ts",
+		"release": "bun codegen && bun build:js && bun build:declaration",
+		"postinstall": "lefthook install"
 	},
-	"bugs": "https://github.com/cstrlcs/glam-js/issues",
-	"author": "Lucas Castro <contact@lucascastro.dev>, Cameron Hart <cameron.hart@gmail.com> (glam-rs)",
-	"devDependencies": {
-		"@biomejs/biome": "latest",
-		"bun-types": "latest",
-		"eta": "3.2.0",
-		"lefthook": "latest",
-		"typescript": "latest"
-	}
+	"types": "dist/index.d.ts"
 }

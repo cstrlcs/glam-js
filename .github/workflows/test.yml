@@ -18,7 +18,4 @@ jobs:
       - name: Build
         run: bun release
 
-      - run: bun coverage
-
-      - name: Coveralls
-        uses: coverallsapp/github-action@v2
+      - run: bun test
