@@ -1,4 +1,9 @@
 pre-commit:
   commands:
+    release:
+      run: bun release
+    check:
+      glob: "*.{ts,json}"
+      run: bunx biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
     test:
       run: bun test
