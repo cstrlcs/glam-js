@@ -21,22 +21,18 @@
 		"name": "Vec",
 		"template": "templates/vec.eta",
 		"description": "A 2-dimensional vector.",
-		"length": 2,
-		"extend": true
+		"length": 2
 	},
 	{
 		"name": "Vec",
 		"template": "templates/vec.eta",
 		"description": "A 3-dimensional vector.",
-		"length": 3,
-		"extend": true,
-		"truncate": true
+		"length": 3
 	},
 	{
 		"name": "Vec",
 		"template": "templates/vec.eta",
 		"description": "A 4-dimensional vector.",
-		"length": 4,
-		"truncate": true
+		"length": 4
 	}
 ]

@@ -5,8 +5,6 @@
 	const properties = ["x", "y", "z", "w",].splice(0, it.length);
 	const type = `${it.name}${it.length}`;
 %>
-import { <%= ["BVec2", "BVec3", "BVec4"].filter(value => value !== type).join(", ") %> } from "./";
-
 export class <%= type %> {
 	constructor(
 <% for (const property of properties) { %>
@@ -103,6 +101,4 @@ export class <%= type %> {
 
 		return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
 	}
-
-<%~ include("./swizzle", it) %>
 }

@@ -5,7 +5,7 @@
 	const properties = ["x", "y", "z", "w",].splice(0, it.length);
 	const type = `${it.name}${it.length}`;
 %>
-import { <%= ["Vec2", "Vec3", "Vec4", "BVec2", "BVec3", "BVec4"].filter(value => value !== type).join(", ") %> } from "./";
+import { B<%= type %> } from "./";
 
 export class <%= type %> {
 	constructor(
@@ -14,7 +14,7 @@ export class <%= type %> {
 <% } %>
 	) {}
 
-  /** All zeroes. */
+	/** All zeroes. */
 	static ZERO = <%= type %>.splat(0);
 
 	/** All ones. */
@@ -78,20 +78,6 @@ export class <%= type %> {
 		return [<%= properties.map(value => `this.${value}`).join(', ') %>];
 	}
 
-<% if (it.extend) { %>
-	/** Creates a `<%= `${it.name}${it.length + 1}` %>` vector from `<%= type %>` and the given `value` value. */
-	extend(value: number): <%= `${it.name}${it.length + 1}` %> {
-		return new <%= `${it.name}${it.length + 1}` %>(<%= properties.map(value => `this.${value}`).join(", ") %>, value);
-	}
-
-<% } %>
-<% if (it.truncate) { %>
-	/** Creates a `<%= `${ `${it.name}${it.length - 1}` }` %>` vector from `<%= type %>` */
-	truncate(): <%= `${it.name}${it.length - 1}` %> {
-		return new <%= `${it.name}${it.length - 1}` %>(<%= properties.slice(0, -1).map(value => `this.${value}`).join(", ") %>);
-	}
-
-<% } %>
 	/** Computes the dot product of `<%= type %>` and `rhs`. */
 	dot(rhs: <%= type %>): number {
 		return <%= properties.map(value => `this.${value} * rhs.${value}`).join(' + ') %>;
@@ -681,6 +667,4 @@ export class <%= type %> {
 
 		return <%= properties.map(value => `Math.abs(this.${value} - rhs) < threshold`).join(' && ') %>;
 	}
-
-<%~ include("./swizzle", it) %>
 }

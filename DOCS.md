@@ -20,7 +20,6 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `not: () => BVec2` - Returns the negation. 
   * `eq: (rhs: boolean | BVec2) => boolean` - This method tests for self and other values to be equal, and is used by ==. 
   * `ne: (rhs: boolean | BVec2) => boolean` - This method tests for !=. 
-  * `_: (value: TemplateStringsArray) => BVec2 | BVec3 | BVec4` - Applies a swizzle to the vector. Example: "v0._`xyxy` => BVec4(this.x, this.y, this.x, this.y)" 
 
 * `BVec` - A 3-dimensional boolean vector. 
   * `FALSE: BVec3` - All false. 
@@ -38,7 +37,6 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `not: () => BVec3` - Returns the negation. 
   * `eq: (rhs: boolean | BVec3) => boolean` - This method tests for self and other values to be equal, and is used by ==. 
   * `ne: (rhs: boolean | BVec3) => boolean` - This method tests for !=. 
-  * `_: (value: TemplateStringsArray) => BVec3 | BVec2 | BVec4` - Applies a swizzle to the vector. Example: "v0._`xyxy` => BVec4(this.x, this.y, this.x, this.y)" 
 
 * `BVec` - A 4-dimensional boolean vector. 
   * `FALSE: BVec4` - All false. 
@@ -56,7 +54,6 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `not: () => BVec4` - Returns the negation. 
   * `eq: (rhs: boolean | BVec4) => boolean` - This method tests for self and other values to be equal, and is used by ==. 
   * `ne: (rhs: boolean | BVec4) => boolean` - This method tests for !=. 
-  * `_: (value: TemplateStringsArray) => BVec4 | BVec2 | BVec3` - Applies a swizzle to the vector. Example: "v0._`xyxy` => BVec4(this.x, this.y, this.x, this.y)" 
 
 * `Vec` - A 2-dimensional vector. 
   * `ZERO: Vec2` - All zeroes. 
@@ -77,7 +74,6 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number]) => Vec2` - Creates a new vector from an array. 
   * `toArray: () => [number, number]` - [x, y] 
-  * `extend: (value: number) => Vec3` - Creates a `Vec3` vector from `Vec2` and the given `value` value. 
   * `dot: (rhs: Vec2) => number` - Computes the dot product of `Vec2` and `rhs`. 
   * `dotIntoVec: (rhs: Vec2) => Vec2` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
   * `min: (rhs: Vec2) => Vec2` - Returns a vector containing the minimum values for each element of `Vec2` and `rhs`.
@@ -202,7 +198,6 @@ it will be like a rotation with a multiplication by `Vec2`'s length.
   * `eq: (rhs: number | Vec2) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec2) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec2) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
-  * `_: (value: TemplateStringsArray) => Vec2 | Vec3 | Vec4` - Applies a swizzle to the vector. Example: "v0._`xyxy` => Vec4(this.x, this.y, this.x, this.y)" 
 
 * `Vec` - A 3-dimensional vector. 
   * `ZERO: Vec3` - All zeroes. 
@@ -225,8 +220,6 @@ it will be like a rotation with a multiplication by `Vec2`'s length.
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number, number]) => Vec3` - Creates a new vector from an array. 
   * `toArray: () => [number, number, number]` - [x, y, z] 
-  * `extend: (value: number) => Vec4` - Creates a `Vec4` vector from `Vec3` and the given `value` value. 
-  * `truncate: () => Vec2` - Creates a `Vec2` vector from `Vec3` 
   * `dot: (rhs: Vec3) => number` - Computes the dot product of `Vec3` and `rhs`. 
   * `dotIntoVec: (rhs: Vec3) => Vec3` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
   * `cross: (rhs: Vec3) => Vec3` - Computes the cross product of `Vec3` and `rhs`. 
@@ -347,7 +340,6 @@ basis. That is, all three vectors are orthogonal to each other and are normalize
   * `eq: (rhs: number | Vec3) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec3) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec3) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
-  * `_: (value: TemplateStringsArray) => Vec3 | Vec4 | Vec2` - Applies a swizzle to the vector. Example: "v0._`xyxy` => Vec4(this.x, this.y, this.x, this.y)" 
 
 * `Vec` - A 4-dimensional vector. 
   * `ZERO: Vec4` - All zeroes. 
@@ -372,7 +364,6 @@ basis. That is, all three vectors are orthogonal to each other and are normalize
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number, number, number]) => Vec4` - Creates a new vector from an array. 
   * `toArray: () => [number, number, number, number]` - [x, y, z, w] 
-  * `truncate: () => Vec3` - Creates a `Vec3` vector from `Vec4` 
   * `dot: (rhs: Vec4) => number` - Computes the dot product of `Vec4` and `rhs`. 
   * `dotIntoVec: (rhs: Vec4) => Vec4` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
   * `min: (rhs: Vec4) => Vec4` - Returns a vector containing the minimum values for each element of `Vec4` and `rhs`.
@@ -485,5 +476,4 @@ The inputs do not need to be unit vectors however they must be non-zero.
   * `eq: (rhs: number | Vec4) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec4) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec4) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
-  * `_: (value: TemplateStringsArray) => Vec4 | Vec3 | Vec2` - Applies a swizzle to the vector. Example: "v0._`xyxy` => Vec4(this.x, this.y, this.x, this.y)" 
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Vec3, Vec2, Vec4, BVec4 } from "@";
+import { BVec4, Vec4 } from "@";
 
 describe("Vec4", () => {
 	test("Construct", () => {
@@ -77,7 +77,6 @@ describe("Vec4", () => {
 		expect(v.y).toEqual(2);
 		expect(v.z).toEqual(3);
 		expect(v.w).toEqual(0);
-		expect(new Vec3(1, 2, 3).eq(v.truncate())).toBeTrue();
 		expect(new Vec4(1, 2, 3, 4).eq(4)).toBeFalse();
 	});
 
@@ -455,21 +454,5 @@ describe("Vec4", () => {
 		const v1 = new Vec4(1, 3, 3, 0);
 		expect(v0.ne(v1)).toBeTrue();
 		expect(v0.ne(2)).toBeTrue();
-	});
-
-	test("Swizzle", () => {
-		const vec = new Vec4(1, 2, 3, 4);
-
-		expect(vec._`xy`).toEqual(new Vec2(1, 2));
-		expect(vec._`yxz`).toEqual(new Vec3(2, 1, 3));
-		expect(vec._`yxzw`).toEqual(new Vec4(2, 1, 3, 4));
-		expect(vec._`yxyz`).toEqual(new Vec4(2, 1, 2, 3));
-
-		expect(() => vec._`xywza`).toThrow(
-			"Invalid parameters. Only [x, y, z, w] are allowed.",
-		);
-
-		expect(() => vec._`y`).toThrow("Invalid number of parameters.");
-		expect(() => vec._`yyyyy`).toThrow("Invalid number of parameters.");
 	});
 });

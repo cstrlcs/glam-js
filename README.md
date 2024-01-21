@@ -3,11 +3,6 @@
 A simple and fast 3D math library for games and graphics.
 
 
-## Development status
-
-`glam-js` is currently in active development and is not yet suitable for production use. While some types are still missing, the Vector types have already been ported.
-
-
 ## Introduction
 
 `glam-js` is a TypeScript port of the incredible [glam-rs](https://github.com/bitshifter/glam-rs) library. Its primary objective is to provide a straightforward and efficient 3D math library for game development and computer graphics, written entirely in TypeScript.
@@ -19,6 +14,11 @@ Notable Changes:
 * Removal of Rust-specific methods related to the borrow checker
 * Elimination of SIMD support
 * Transition from `snake_case` to `camelCase` for naming conventions
+
+
+## Development status
+
+`glam-js` is currently in active development and is not yet suitable for production use. While some types are still missing, the Vector types have already been ported.
 
 
 ## Features
