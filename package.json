@@ -1,6 +1,6 @@
 {
 	"name": "glam-js",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": "Lucas Castro <contact@lucascastro.dev>, Cameron Hart <cameron.hart@gmail.com> (glam-rs)",
 	"repository": {
 		"type": "git",

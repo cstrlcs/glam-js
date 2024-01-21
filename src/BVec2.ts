@@ -6,12 +6,12 @@ export class BVec2 {
 		public y: boolean,
 	) {}
 
-	/** All false. */
+	/** All false. (false, false..) */
 	static get FALSE() {
 		return BVec2.splat(false);
 	}
 
-	/** All true. */
+	/** All true. (true, true..) */
 	static get TRUE() {
 		return BVec2.splat(true);
 	}
@@ -95,5 +95,10 @@ export class BVec2 {
 		}
 
 		return this.x !== rhs || this.y !== rhs;
+	}
+
+	/** Prints out a formatted output of the instance. */
+	toString() {
+		return `BVec2(${this.x}, ${this.y})`;
 	}
 }

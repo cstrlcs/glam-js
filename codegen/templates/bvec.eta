@@ -12,12 +12,12 @@ export class <%= type %> {
 <% } %>
 	) {}
 
-  /** All false. */
+  /** All false. (false, false..) */
 	static get FALSE() {
 		return <%= type %>.splat(false);
 	}
 
-	/** All true. */
+	/** All true. (true, true..) */
 	static get TRUE() { 
 		return <%= type %>.splat(true);
 	}
@@ -104,5 +104,10 @@ export class <%= type %> {
 		}
 
 		return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
+	}
+
+	/** Prints out a formatted output of the instance. */
+	toString() {
+			return `<%= type %>(<%= properties.map(value => "${this.<property>}".replace("<property>", value)).join(', ') %>)`;
 	}
 }

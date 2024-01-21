@@ -9,82 +9,82 @@ export class Vec3 {
 		public z: number,
 	) {}
 
-	/** All zeroes. */
+	/** All zeroes. (0, 0..) */
 	static get ZERO() {
 		return Vec3.splat(0);
 	}
 
-	/** All ones. */
+	/** All ones. (1, 1..) */
 	static get ONE() {
 		return Vec3.splat(1);
 	}
 
-	/** All negative ones. */
+	/** All negative ones. (-1, -1..) */
 	static get NEG_ONE() {
 		return Vec3.splat(-1);
 	}
 
-	/** All `Number.MIN_VALUE`. */
+	/** All `Number.MIN_VALUE`. (5e-324, 5e-324..) */
 	static get MIN() {
 		return Vec3.splat(Number.MIN_VALUE);
 	}
 
-	/** All `Number.MAX_VALUE`. */
+	/** All `Number.MAX_VALUE`. (1.7976931348623157e+308, 1.7976931348623157e+308..) */
 	static get MAX() {
 		return Vec3.splat(Number.MAX_VALUE);
 	}
 
-	/** All `NaN`. */
+	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
 		return Vec3.splat(NaN);
 	}
 
-	/** All `Infinity`. */
+	/** All `Infinity`. (Infinity, Infinity..) */
 	static get INFINITY() {
 		return Vec3.splat(Infinity);
 	}
 
-	/** All `-Infinity`. */
+	/** All `-Infinity`. (-Infinity, -Infinity..) */
 	static get NEG_INFINITY() {
 		return Vec3.splat(-Infinity);
 	}
 
-	/** A unit vector pointing along the positive X axis. */
+	/** A unit vector pointing along the positive X axis. (1, 0, 0) */
 	static get X() {
 		return new Vec3(1, 0, 0);
 	}
 
-	/** A unit vector pointing along the positive Y axis. */
+	/** A unit vector pointing along the positive Y axis. (0, 1, 0) */
 	static get Y() {
 		return new Vec3(0, 1, 0);
 	}
 
-	/** A unit vector pointing along the positive Z axis. */
+	/** A unit vector pointing along the positive Z axis. (0, 0, 1) */
 	static get Z() {
 		return new Vec3(0, 0, 1);
 	}
 
-	/** A unit vector pointing along the negative X axis. */
+	/** A unit vector pointing along the negative X axis. (-1, 0, 0) */
 	static get NEG_X() {
 		return new Vec3(-1, 0, 0);
 	}
 
-	/** A unit vector pointing along the negative Y axis. */
+	/** A unit vector pointing along the negative Y axis. (0, -1, 0) */
 	static get NEG_Y() {
 		return new Vec3(0, -1, 0);
 	}
 
-	/** A unit vector pointing along the negative Z axis. */
+	/** A unit vector pointing along the negative Z axis. (0, 0, -1) */
 	static get NEG_Z() {
 		return new Vec3(0, 0, -1);
 	}
 
-	/** The unit axes. */
+	/** The unit axes. [Vec3.X, Vec3.Y, Vec3.Z] */
 	static get AXES() {
 		return [Vec3.X, Vec3.Y, Vec3.Z];
 	}
 
-	/** Creates a vector with all elements set to v. */
+	/** Creates a vector with all elements set to v. (v, v, v) */
 	static splat(v: number): Vec3 {
 		return new Vec3(v, v, v);
 	}
@@ -673,5 +673,10 @@ export class Vec3 {
 			Math.abs(this.y - rhs) < threshold &&
 			Math.abs(this.z - rhs) < threshold
 		);
+	}
+
+	/** Prints out a formatted output of the instance. */
+	toString() {
+		return `Vec3(${this.x}, ${this.y}, ${this.z})`;
 	}
 }

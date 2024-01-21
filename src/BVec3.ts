@@ -7,12 +7,12 @@ export class BVec3 {
 		public z: boolean,
 	) {}
 
-	/** All false. */
+	/** All false. (false, false..) */
 	static get FALSE() {
 		return BVec3.splat(false);
 	}
 
-	/** All true. */
+	/** All true. (true, true..) */
 	static get TRUE() {
 		return BVec3.splat(true);
 	}
@@ -99,5 +99,10 @@ export class BVec3 {
 		}
 
 		return this.x !== rhs || this.y !== rhs || this.z !== rhs;
+	}
+
+	/** Prints out a formatted output of the instance. */
+	toString() {
+		return `BVec3(${this.x}, ${this.y}, ${this.z})`;
 	}
 }

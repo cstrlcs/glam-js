@@ -8,12 +8,12 @@ export class BVec4 {
 		public w: boolean,
 	) {}
 
-	/** All false. */
+	/** All false. (false, false..) */
 	static get FALSE() {
 		return BVec4.splat(false);
 	}
 
-	/** All true. */
+	/** All true. (true, true..) */
 	static get TRUE() {
 		return BVec4.splat(true);
 	}
@@ -118,5 +118,10 @@ export class BVec4 {
 		}
 
 		return this.x !== rhs || this.y !== rhs || this.z !== rhs || this.w !== rhs;
+	}
+
+	/** Prints out a formatted output of the instance. */
+	toString() {
+		return `BVec4(${this.x}, ${this.y}, ${this.z}, ${this.w})`;
 	}
 }

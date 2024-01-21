@@ -5,8 +5,8 @@
 ## API Reference
 
 * `BVec` - A 2-dimensional boolean vector. 
-  * `FALSE: BVec2` - All false. 
-  * `TRUE: BVec2` - All true. 
+  * `FALSE: BVec2` - All false. (false, false..) 
+  * `TRUE: BVec2` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec2` - Creates a vector with all elements set to v. 
   * `bitmask: () => number` - Returns a bitmask with the lowest 2 bits set from the elements of BVec2.
 A true element results in a 1 bit and a false element in a 0 bit. Element x goes into the first lowest bit, element y into the second, etc. 
@@ -20,10 +20,11 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `not: () => BVec2` - Returns the negation. 
   * `eq: (rhs: boolean | BVec2) => boolean` - This method tests for self and other values to be equal, and is used by ==. 
   * `ne: (rhs: boolean | BVec2) => boolean` - This method tests for !=. 
+  * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `BVec` - A 3-dimensional boolean vector. 
-  * `FALSE: BVec3` - All false. 
-  * `TRUE: BVec3` - All true. 
+  * `FALSE: BVec3` - All false. (false, false..) 
+  * `TRUE: BVec3` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec3` - Creates a vector with all elements set to v. 
   * `bitmask: () => number` - Returns a bitmask with the lowest 2 bits set from the elements of BVec3.
 A true element results in a 1 bit and a false element in a 0 bit. Element x goes into the first lowest bit, element y into the second, etc. 
@@ -37,10 +38,11 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `not: () => BVec3` - Returns the negation. 
   * `eq: (rhs: boolean | BVec3) => boolean` - This method tests for self and other values to be equal, and is used by ==. 
   * `ne: (rhs: boolean | BVec3) => boolean` - This method tests for !=. 
+  * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `BVec` - A 4-dimensional boolean vector. 
-  * `FALSE: BVec4` - All false. 
-  * `TRUE: BVec4` - All true. 
+  * `FALSE: BVec4` - All false. (false, false..) 
+  * `TRUE: BVec4` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec4` - Creates a vector with all elements set to v. 
   * `bitmask: () => number` - Returns a bitmask with the lowest 2 bits set from the elements of BVec4.
 A true element results in a 1 bit and a false element in a 0 bit. Element x goes into the first lowest bit, element y into the second, etc. 
@@ -54,22 +56,23 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `not: () => BVec4` - Returns the negation. 
   * `eq: (rhs: boolean | BVec4) => boolean` - This method tests for self and other values to be equal, and is used by ==. 
   * `ne: (rhs: boolean | BVec4) => boolean` - This method tests for !=. 
+  * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `Vec` - A 2-dimensional vector. 
-  * `ZERO: Vec2` - All zeroes. 
-  * `ONE: Vec2` - All ones. 
-  * `NEG_ONE: Vec2` - All negative ones. 
-  * `MIN: Vec2` - All `Number.MIN_VALUE`. 
-  * `MAX: Vec2` - All `Number.MAX_VALUE`. 
-  * `NAN: Vec2` - All `NaN`. 
-  * `INFINITY: Vec2` - All `Infinity`. 
-  * `NEG_INFINITY: Vec2` - All `-Infinity`. 
-  * `X: Vec2` - A unit vector pointing along the positive X axis. 
-  * `Y: Vec2` - A unit vector pointing along the positive Y axis. 
-  * `NEG_X: Vec2` - A unit vector pointing along the negative X axis. 
-  * `NEG_Y: Vec2` - A unit vector pointing along the negative Y axis. 
-  * `AXES: Vec2[]` - The unit axes. 
-  * `splat: (v: number) => Vec2` - Creates a vector with all elements set to v. 
+  * `ZERO: Vec2` - All zeroes. (0, 0..) 
+  * `ONE: Vec2` - All ones. (1, 1..) 
+  * `NEG_ONE: Vec2` - All negative ones. (-1, -1..) 
+  * `MIN: Vec2` - All `Number.MIN_VALUE`. (5e-324, 5e-324..) 
+  * `MAX: Vec2` - All `Number.MAX_VALUE`. (1.7976931348623157e+308, 1.7976931348623157e+308..) 
+  * `NAN: Vec2` - All `NaN`. (NaN, NaN..) 
+  * `INFINITY: Vec2` - All `Infinity`. (Infinity, Infinity..) 
+  * `NEG_INFINITY: Vec2` - All `-Infinity`. (-Infinity, -Infinity..) 
+  * `X: Vec2` - A unit vector pointing along the positive X axis. (1, 0) 
+  * `Y: Vec2` - A unit vector pointing along the positive Y axis. (0, 1) 
+  * `NEG_X: Vec2` - A unit vector pointing along the negative X axis. (-1, 0) 
+  * `NEG_Y: Vec2` - A unit vector pointing along the negative Y axis. (0, -1) 
+  * `AXES: Vec2[]` - The unit axes. [Vec2.X, Vec2.Y] 
+  * `splat: (v: number) => Vec2` - Creates a vector with all elements set to v. (v, v) 
   * `select: (mask: BVec2, ifTrue: Vec2, ifFalse: Vec2) => Vec2` - Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use for each element.
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number]) => Vec2` - Creates a new vector from an array. 
@@ -198,24 +201,25 @@ it will be like a rotation with a multiplication by `Vec2`'s length.
   * `eq: (rhs: number | Vec2) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec2) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec2) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
+  * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `Vec` - A 3-dimensional vector. 
-  * `ZERO: Vec3` - All zeroes. 
-  * `ONE: Vec3` - All ones. 
-  * `NEG_ONE: Vec3` - All negative ones. 
-  * `MIN: Vec3` - All `Number.MIN_VALUE`. 
-  * `MAX: Vec3` - All `Number.MAX_VALUE`. 
-  * `NAN: Vec3` - All `NaN`. 
-  * `INFINITY: Vec3` - All `Infinity`. 
-  * `NEG_INFINITY: Vec3` - All `-Infinity`. 
-  * `X: Vec3` - A unit vector pointing along the positive X axis. 
-  * `Y: Vec3` - A unit vector pointing along the positive Y axis. 
-  * `Z: Vec3` - A unit vector pointing along the positive Z axis. 
-  * `NEG_X: Vec3` - A unit vector pointing along the negative X axis. 
-  * `NEG_Y: Vec3` - A unit vector pointing along the negative Y axis. 
-  * `NEG_Z: Vec3` - A unit vector pointing along the negative Z axis. 
-  * `AXES: Vec3[]` - The unit axes. 
-  * `splat: (v: number) => Vec3` - Creates a vector with all elements set to v. 
+  * `ZERO: Vec3` - All zeroes. (0, 0..) 
+  * `ONE: Vec3` - All ones. (1, 1..) 
+  * `NEG_ONE: Vec3` - All negative ones. (-1, -1..) 
+  * `MIN: Vec3` - All `Number.MIN_VALUE`. (5e-324, 5e-324..) 
+  * `MAX: Vec3` - All `Number.MAX_VALUE`. (1.7976931348623157e+308, 1.7976931348623157e+308..) 
+  * `NAN: Vec3` - All `NaN`. (NaN, NaN..) 
+  * `INFINITY: Vec3` - All `Infinity`. (Infinity, Infinity..) 
+  * `NEG_INFINITY: Vec3` - All `-Infinity`. (-Infinity, -Infinity..) 
+  * `X: Vec3` - A unit vector pointing along the positive X axis. (1, 0, 0) 
+  * `Y: Vec3` - A unit vector pointing along the positive Y axis. (0, 1, 0) 
+  * `Z: Vec3` - A unit vector pointing along the positive Z axis. (0, 0, 1) 
+  * `NEG_X: Vec3` - A unit vector pointing along the negative X axis. (-1, 0, 0) 
+  * `NEG_Y: Vec3` - A unit vector pointing along the negative Y axis. (0, -1, 0) 
+  * `NEG_Z: Vec3` - A unit vector pointing along the negative Z axis. (0, 0, -1) 
+  * `AXES: Vec3[]` - The unit axes. [Vec3.X, Vec3.Y, Vec3.Z] 
+  * `splat: (v: number) => Vec3` - Creates a vector with all elements set to v. (v, v, v) 
   * `select: (mask: BVec3, ifTrue: Vec3, ifFalse: Vec3) => Vec3` - Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use for each element.
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number, number]) => Vec3` - Creates a new vector from an array. 
@@ -340,26 +344,27 @@ basis. That is, all three vectors are orthogonal to each other and are normalize
   * `eq: (rhs: number | Vec3) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec3) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec3) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
+  * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `Vec` - A 4-dimensional vector. 
-  * `ZERO: Vec4` - All zeroes. 
-  * `ONE: Vec4` - All ones. 
-  * `NEG_ONE: Vec4` - All negative ones. 
-  * `MIN: Vec4` - All `Number.MIN_VALUE`. 
-  * `MAX: Vec4` - All `Number.MAX_VALUE`. 
-  * `NAN: Vec4` - All `NaN`. 
-  * `INFINITY: Vec4` - All `Infinity`. 
-  * `NEG_INFINITY: Vec4` - All `-Infinity`. 
-  * `X: Vec4` - A unit vector pointing along the positive X axis. 
-  * `Y: Vec4` - A unit vector pointing along the positive Y axis. 
-  * `Z: Vec4` - A unit vector pointing along the positive Z axis. 
-  * `W: Vec4` - A unit vector pointing along the positive W axis. 
-  * `NEG_X: Vec4` - A unit vector pointing along the negative X axis. 
-  * `NEG_Y: Vec4` - A unit vector pointing along the negative Y axis. 
-  * `NEG_Z: Vec4` - A unit vector pointing along the negative Z axis. 
-  * `NEG_W: Vec4` - A unit vector pointing along the negative W axis. 
-  * `AXES: Vec4[]` - The unit axes. 
-  * `splat: (v: number) => Vec4` - Creates a vector with all elements set to v. 
+  * `ZERO: Vec4` - All zeroes. (0, 0..) 
+  * `ONE: Vec4` - All ones. (1, 1..) 
+  * `NEG_ONE: Vec4` - All negative ones. (-1, -1..) 
+  * `MIN: Vec4` - All `Number.MIN_VALUE`. (5e-324, 5e-324..) 
+  * `MAX: Vec4` - All `Number.MAX_VALUE`. (1.7976931348623157e+308, 1.7976931348623157e+308..) 
+  * `NAN: Vec4` - All `NaN`. (NaN, NaN..) 
+  * `INFINITY: Vec4` - All `Infinity`. (Infinity, Infinity..) 
+  * `NEG_INFINITY: Vec4` - All `-Infinity`. (-Infinity, -Infinity..) 
+  * `X: Vec4` - A unit vector pointing along the positive X axis. (1, 0, 0, 0) 
+  * `Y: Vec4` - A unit vector pointing along the positive Y axis. (0, 1, 0, 0) 
+  * `Z: Vec4` - A unit vector pointing along the positive Z axis. (0, 0, 1, 0) 
+  * `W: Vec4` - A unit vector pointing along the positive W axis. (0, 0, 0, 1) 
+  * `NEG_X: Vec4` - A unit vector pointing along the negative X axis. (-1, 0, 0, 0) 
+  * `NEG_Y: Vec4` - A unit vector pointing along the negative Y axis. (0, -1, 0, 0) 
+  * `NEG_Z: Vec4` - A unit vector pointing along the negative Z axis. (0, 0, -1, 0) 
+  * `NEG_W: Vec4` - A unit vector pointing along the negative W axis. (0, 0, 0, -1) 
+  * `AXES: Vec4[]` - The unit axes. [Vec4.X, Vec4.Y, Vec4.Z, Vec4.W] 
+  * `splat: (v: number) => Vec4` - Creates a vector with all elements set to v. (v, v, v, v) 
   * `select: (mask: BVec4, ifTrue: Vec4, ifFalse: Vec4) => Vec4` - Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use for each element.
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number, number, number]) => Vec4` - Creates a new vector from an array. 
@@ -476,4 +481,5 @@ The inputs do not need to be unit vectors however they must be non-zero.
   * `eq: (rhs: number | Vec4) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec4) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec4) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
+  * `toString: () => string` - Prints out a formatted output of the instance. 
 
