@@ -9,43 +9,69 @@ export class Vec2 {
 	) {}
 
 	/** All zeroes. */
-	static ZERO = Vec2.splat(0);
+	static get ZERO() {
+		return Vec2.splat(0);
+	}
 
 	/** All ones. */
-	static ONE = Vec2.splat(1);
+	static get ONE() {
+		return Vec2.splat(1);
+	}
 
 	/** All negative ones. */
-	static NEG_ONE = Vec2.splat(-1);
+	static get NEG_ONE() {
+		return Vec2.splat(-1);
+	}
 
 	/** All `Number.MIN_VALUE`. */
-	static MIN = Vec2.splat(Number.MIN_VALUE);
+	static get MIN() {
+		return Vec2.splat(Number.MIN_VALUE);
+	}
 
 	/** All `Number.MAX_VALUE`. */
-	static MAX = Vec2.splat(Number.MAX_VALUE);
+	static get MAX() {
+		return Vec2.splat(Number.MAX_VALUE);
+	}
 
 	/** All `NaN`. */
-	static NAN = Vec2.splat(NaN);
+	static get NAN() {
+		return Vec2.splat(NaN);
+	}
 
 	/** All `Infinity`. */
-	static INFINITY = Vec2.splat(Infinity);
+	static get INFINITY() {
+		return Vec2.splat(Infinity);
+	}
 
 	/** All `-Infinity`. */
-	static NEG_INFINITY = Vec2.splat(-Infinity);
+	static get NEG_INFINITY() {
+		return Vec2.splat(-Infinity);
+	}
 
 	/** A unit vector pointing along the positive X axis. */
-	static X = new Vec2(1, 0);
+	static get X() {
+		return new Vec2(1, 0);
+	}
 
 	/** A unit vector pointing along the positive Y axis. */
-	static Y = new Vec2(0, 1);
+	static get Y() {
+		return new Vec2(0, 1);
+	}
 
 	/** A unit vector pointing along the negative X axis. */
-	static NEG_X = new Vec2(-1, 0);
+	static get NEG_X() {
+		return new Vec2(-1, 0);
+	}
 
 	/** A unit vector pointing along the negative Y axis. */
-	static NEG_Y = new Vec2(0, -1);
+	static get NEG_Y() {
+		return new Vec2(0, -1);
+	}
 
 	/** The unit axes. */
-	static AXES = [Vec2.X, Vec2.Y];
+	static get AXES() {
+		return [Vec2.X, Vec2.Y];
+	}
 
 	/** Creates a vector with all elements set to v. */
 	static splat(v: number): Vec2 {

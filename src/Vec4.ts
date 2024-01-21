@@ -11,55 +11,89 @@ export class Vec4 {
 	) {}
 
 	/** All zeroes. */
-	static ZERO = Vec4.splat(0);
+	static get ZERO() {
+		return Vec4.splat(0);
+	}
 
 	/** All ones. */
-	static ONE = Vec4.splat(1);
+	static get ONE() {
+		return Vec4.splat(1);
+	}
 
 	/** All negative ones. */
-	static NEG_ONE = Vec4.splat(-1);
+	static get NEG_ONE() {
+		return Vec4.splat(-1);
+	}
 
 	/** All `Number.MIN_VALUE`. */
-	static MIN = Vec4.splat(Number.MIN_VALUE);
+	static get MIN() {
+		return Vec4.splat(Number.MIN_VALUE);
+	}
 
 	/** All `Number.MAX_VALUE`. */
-	static MAX = Vec4.splat(Number.MAX_VALUE);
+	static get MAX() {
+		return Vec4.splat(Number.MAX_VALUE);
+	}
 
 	/** All `NaN`. */
-	static NAN = Vec4.splat(NaN);
+	static get NAN() {
+		return Vec4.splat(NaN);
+	}
 
 	/** All `Infinity`. */
-	static INFINITY = Vec4.splat(Infinity);
+	static get INFINITY() {
+		return Vec4.splat(Infinity);
+	}
 
 	/** All `-Infinity`. */
-	static NEG_INFINITY = Vec4.splat(-Infinity);
+	static get NEG_INFINITY() {
+		return Vec4.splat(-Infinity);
+	}
 
 	/** A unit vector pointing along the positive X axis. */
-	static X = new Vec4(1, 0, 0, 0);
+	static get X() {
+		return new Vec4(1, 0, 0, 0);
+	}
 
 	/** A unit vector pointing along the positive Y axis. */
-	static Y = new Vec4(0, 1, 0, 0);
+	static get Y() {
+		return new Vec4(0, 1, 0, 0);
+	}
 
 	/** A unit vector pointing along the positive Z axis. */
-	static Z = new Vec4(0, 0, 1, 0);
+	static get Z() {
+		return new Vec4(0, 0, 1, 0);
+	}
 
 	/** A unit vector pointing along the positive W axis. */
-	static W = new Vec4(0, 0, 0, 1);
+	static get W() {
+		return new Vec4(0, 0, 0, 1);
+	}
 
 	/** A unit vector pointing along the negative X axis. */
-	static NEG_X = new Vec4(-1, 0, 0, 0);
+	static get NEG_X() {
+		return new Vec4(-1, 0, 0, 0);
+	}
 
 	/** A unit vector pointing along the negative Y axis. */
-	static NEG_Y = new Vec4(0, -1, 0, 0);
+	static get NEG_Y() {
+		return new Vec4(0, -1, 0, 0);
+	}
 
 	/** A unit vector pointing along the negative Z axis. */
-	static NEG_Z = new Vec4(0, 0, -1, 0);
+	static get NEG_Z() {
+		return new Vec4(0, 0, -1, 0);
+	}
 
 	/** A unit vector pointing along the negative W axis. */
-	static NEG_W = new Vec4(0, 0, 0, -1);
+	static get NEG_W() {
+		return new Vec4(0, 0, 0, -1);
+	}
 
 	/** The unit axes. */
-	static AXES = [Vec4.X, Vec4.Y, Vec4.Z, Vec4.W];
+	static get AXES() {
+		return [Vec4.X, Vec4.Y, Vec4.Z, Vec4.W];
+	}
 
 	/** Creates a vector with all elements set to v. */
 	static splat(v: number): Vec4 {

@@ -7,10 +7,14 @@ export class BVec2 {
 	) {}
 
 	/** All false. */
-	static FALSE = BVec2.splat(false);
+	static get FALSE() {
+		return BVec2.splat(false);
+	}
 
 	/** All true. */
-	static TRUE = BVec2.splat(true);
+	static get TRUE() {
+		return BVec2.splat(true);
+	}
 
 	/** Creates a vector with all elements set to v. */
 	static splat(v: boolean): BVec2 {

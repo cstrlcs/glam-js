@@ -13,10 +13,14 @@ export class <%= type %> {
 	) {}
 
   /** All false. */
-	static FALSE = <%= type %>.splat(false);
+	static get FALSE() {
+		return <%= type %>.splat(false);
+	}
 
 	/** All true. */
-	static TRUE = <%= type %>.splat(true);
+	static get TRUE() { 
+		return <%= type %>.splat(true);
+	}
 
 	/** Creates a vector with all elements set to v. */
 	static splat(v: boolean): <%= type %> {

@@ -9,10 +9,14 @@ export class BVec4 {
 	) {}
 
 	/** All false. */
-	static FALSE = BVec4.splat(false);
+	static get FALSE() {
+		return BVec4.splat(false);
+	}
 
 	/** All true. */
-	static TRUE = BVec4.splat(true);
+	static get TRUE() {
+		return BVec4.splat(true);
+	}
 
 	/** Creates a vector with all elements set to v. */
 	static splat(v: boolean): BVec4 {

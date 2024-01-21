@@ -8,10 +8,14 @@ export class BVec3 {
 	) {}
 
 	/** All false. */
-	static FALSE = BVec3.splat(false);
+	static get FALSE() {
+		return BVec3.splat(false);
+	}
 
 	/** All true. */
-	static TRUE = BVec3.splat(true);
+	static get TRUE() {
+		return BVec3.splat(true);
+	}
 
 	/** Creates a vector with all elements set to v. */
 	static splat(v: boolean): BVec3 {

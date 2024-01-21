@@ -10,49 +10,79 @@ export class Vec3 {
 	) {}
 
 	/** All zeroes. */
-	static ZERO = Vec3.splat(0);
+	static get ZERO() {
+		return Vec3.splat(0);
+	}
 
 	/** All ones. */
-	static ONE = Vec3.splat(1);
+	static get ONE() {
+		return Vec3.splat(1);
+	}
 
 	/** All negative ones. */
-	static NEG_ONE = Vec3.splat(-1);
+	static get NEG_ONE() {
+		return Vec3.splat(-1);
+	}
 
 	/** All `Number.MIN_VALUE`. */
-	static MIN = Vec3.splat(Number.MIN_VALUE);
+	static get MIN() {
+		return Vec3.splat(Number.MIN_VALUE);
+	}
 
 	/** All `Number.MAX_VALUE`. */
-	static MAX = Vec3.splat(Number.MAX_VALUE);
+	static get MAX() {
+		return Vec3.splat(Number.MAX_VALUE);
+	}
 
 	/** All `NaN`. */
-	static NAN = Vec3.splat(NaN);
+	static get NAN() {
+		return Vec3.splat(NaN);
+	}
 
 	/** All `Infinity`. */
-	static INFINITY = Vec3.splat(Infinity);
+	static get INFINITY() {
+		return Vec3.splat(Infinity);
+	}
 
 	/** All `-Infinity`. */
-	static NEG_INFINITY = Vec3.splat(-Infinity);
+	static get NEG_INFINITY() {
+		return Vec3.splat(-Infinity);
+	}
 
 	/** A unit vector pointing along the positive X axis. */
-	static X = new Vec3(1, 0, 0);
+	static get X() {
+		return new Vec3(1, 0, 0);
+	}
 
 	/** A unit vector pointing along the positive Y axis. */
-	static Y = new Vec3(0, 1, 0);
+	static get Y() {
+		return new Vec3(0, 1, 0);
+	}
 
 	/** A unit vector pointing along the positive Z axis. */
-	static Z = new Vec3(0, 0, 1);
+	static get Z() {
+		return new Vec3(0, 0, 1);
+	}
 
 	/** A unit vector pointing along the negative X axis. */
-	static NEG_X = new Vec3(-1, 0, 0);
+	static get NEG_X() {
+		return new Vec3(-1, 0, 0);
+	}
 
 	/** A unit vector pointing along the negative Y axis. */
-	static NEG_Y = new Vec3(0, -1, 0);
+	static get NEG_Y() {
+		return new Vec3(0, -1, 0);
+	}
 
 	/** A unit vector pointing along the negative Z axis. */
-	static NEG_Z = new Vec3(0, 0, -1);
+	static get NEG_Z() {
+		return new Vec3(0, 0, -1);
+	}
 
 	/** The unit axes. */
-	static AXES = [Vec3.X, Vec3.Y, Vec3.Z];
+	static get AXES() {
+		return [Vec3.X, Vec3.Y, Vec3.Z];
+	}
 
 	/** Creates a vector with all elements set to v. */
 	static splat(v: number): Vec3 {

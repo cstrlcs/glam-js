@@ -1,5 +1,5 @@
-import type { SourceInfoElement } from "./types";
 import ts from "typescript";
+import type { SourceInfoElement } from "./types";
 
 const extractNodeInfo = (
 	node: ts.Node,
@@ -9,6 +9,7 @@ const extractNodeInfo = (
 	if (
 		ts.isFunctionDeclaration(node) ||
 		ts.isMethodDeclaration(node) ||
+		ts.isGetAccessorDeclaration(node) ||
 		ts.isPropertyDeclaration(node)
 	) {
 		const element: SourceInfoElement = {
