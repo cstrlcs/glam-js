@@ -9,20 +9,34 @@
 			"recommended": true,
 			"complexity": {
 				"noExcessiveCognitiveComplexity": "error",
-				"noVoid": "error"
+				"noVoid": "error",
+				"useSimplifiedLogicExpression": "error"
 			},
 			"correctness": {
 				"noNewSymbol": "error",
-				"noUndeclaredVariables": "warn",
-				"noUnusedVariables": "warn"
+				"noUndeclaredVariables": "error",
+				"noUnusedVariables": "error",
+				"useHookAtTopLevel": "error"
 			},
 			"style": {
+				"noDefaultExport": "error",
+				"noImplicitBoolean": "error",
+				"noNamespace": "error",
+				"noNegationElse": "error",
+				"noParameterAssign": "error",
+				"noRestrictedGlobals": "error",
+				"noShoutyConstants": "error",
 				"useBlockStatements": "error",
 				"useCollapsedElseIf": "error",
+				"useFragmentSyntax": "error",
+				"useNamingConvention": "off",
 				"useShorthandArrayType": "error",
-				"useShorthandAssign": "error"
+				"useShorthandAssign": "error",
+				"useSingleCaseStatement": "error"
 			},
 			"suspicious": {
+				"noApproximativeNumericConstant": "error",
+				"noConsoleLog": "error",
 				"noMisrefactoredShorthandAssign": "error"
 			}
 		}

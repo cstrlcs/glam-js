@@ -1,6 +1,6 @@
 {
 	"name": "glam-js",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"author": "Lucas Castro <contact@lucascastro.dev>, Cameron Hart <cameron.hart@gmail.com> (glam-rs)",
 	"repository": {
 		"type": "git",
@@ -16,7 +16,9 @@
 	},
 	"bugs": "https://github.com/cstrlcs/glam-js/issues",
 	"description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"homepage": "https://github.com/cstrlcs/glam-js#readme",
 	"keywords": [
 		"gamedev",

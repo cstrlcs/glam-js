@@ -40,7 +40,7 @@ export class BVec2 {
 	}
 
 	/** Tests the value at index. */
-	test(index: 0 | 1): boolean {
+	test(index: 0 | 1): boolean | undefined {
 		return [this.x, this.y][index];
 	}
 

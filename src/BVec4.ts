@@ -47,7 +47,7 @@ export class BVec4 {
 	}
 
 	/** Tests the value at index. */
-	test(index: 0 | 1 | 2 | 3): boolean {
+	test(index: 0 | 1 | 2 | 3): boolean | undefined {
 		return [this.x, this.y, this.z, this.w][index];
 	}
 

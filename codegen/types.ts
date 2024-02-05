@@ -6,6 +6,6 @@ export interface SourceInfo {
 
 export interface SourceInfoElement {
 	type: string;
-	name?: string;
-	description?: string;
+	name?: string | undefined;
+	description?: string | undefined;
 }

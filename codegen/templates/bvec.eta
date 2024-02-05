@@ -46,7 +46,7 @@ export class <%= type %> {
 	}
 
 	/** Tests the value at index. */
-	test(index: <%= [...Array(it.length).keys()].join(" | ") %>): boolean {
+	test(index: <%= [...Array(it.length).keys()].join(" | ") %>): boolean | undefined {
 		return [<%= properties.map(value => `this.${value}`).join(", ") %>][index];
 	}
 
