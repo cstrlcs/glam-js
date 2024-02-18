@@ -16,15 +16,15 @@
 
 ## Quick Links 📚
 
-> - [ Overview](#-overview)
-> - [ Development status](#-development-status)
-> - [ Features](#-features)
-> - [ Design Phylosophy](#-design-phylosophy)
-> - [ Installation](#-installation)
-> - [ Inspirations](#-inspirations)
-> - [ License](#-license)
-> - [ Contributing](#-contributing)
-> - [ Attribution](#-attribution)
+> - [ Overview](#overview-)
+> - [ Development status](#development-status-)
+> - [ Features](#features-)
+> - [ Design Phylosophy](#design-phylosophy-)
+> - [ Installation](#installation-)
+> - [ Inspirations](#inspirations-)
+> - [ License](#license-)
+> - [ Contributing](#contributing-)
+> - [ Attribution](#attribution-)
 
 ---
 
