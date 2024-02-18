@@ -1,8 +1,31 @@
-# glam-js
+<p align="center">
+  <img src="logo.png" />
+</p>
+<p align="center">
+    <em>A simple and fast 3D math library for games and graphics. Written in TypeScript.</em>
+</p>
+<p align="center">
+	<img src="https://img.shields.io/github/license/cstrlcs/glam-js?style=flat&color=0080ff" alt="license">
+	<img src="https://img.shields.io/github/last-commit/cstrlcs/glam-js?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
+	<img src="https://img.shields.io/github/languages/top/cstrlcs/glam-js?style=flat&color=0080ff" alt="repo-top-language">
+<p>
+<hr>
 
-A simple and fast 3D math library for games and graphics.
+## Quick Links 📚
 
-## Introduction
+> - [ Overview](#-overview)
+> - [ Development status](#-development-status)
+> - [ Features](#-features)
+> - [ Design Phylosophy](#-design-phylosophy)
+> - [ Installation](#-installation)
+> - [ Inspirations](#-inspirations)
+> - [ License](#-license)
+> - [ Contributing](#-contributing)
+> - [ Attribution](#-attribution)
+
+---
+
+## Overview 📖
 
 `glam-js` is a TypeScript port of the incredible [glam-rs](https://github.com/bitshifter/glam-rs) library. Its primary objective is to provide a straightforward and efficient 3D math library for game development and computer graphics, written entirely in TypeScript.
 
@@ -15,11 +38,11 @@ Notable Changes:
 - Elimination of SIMD support
 - Transition from `snake_case` to `camelCase` for naming conventions
 
-## Development status
+## Development status 🚧
 
 `glam-js` is currently in active development and is not yet suitable for production use. While some types are still missing, the Vector types have already been ported.
 
-## Features
+## Features 🌟
 
 - ✨ Simple to use: since the code is generated, the API is super simple to understand
 - 📦 0 dependencies
@@ -31,11 +54,7 @@ Notable Changes:
 - ☑️ `boolean` types
   - vectors: `BVec2`, `BVec3` and `BVec4`
 
-## Motivation
-
-The goal of this port is to provide a faithful port of the original Rust library, allowing for easy and quick prototyping in pure JavaScript environments. This enables developers to quickly incorporate `glam-js` into projects by simply importing it from a CDN, such as [CodePen](https://codepen.io/) or [JSFiddle](https://jsfiddle.net/).
-
-## Design Philosophy
+## Design Philosophy 📐
 
 The design of this library is guided by a desire for simplicity and good
 performance.
@@ -43,7 +62,28 @@ performance.
 - No generics and minimal type complexity in the public API for simplicity of usage
 - Aiming for 100% test [coverage]
 
-## Inspirations
+### Installation 🛠️
+
+1. Add the package to your project:
+
+```sh
+npm i glam-js
+```
+
+2. Import the package into your project:
+
+```ts
+import { Vec3 } from "glam-js";
+
+const vec = new Vec3(1, 2, 3);
+
+vec.div(3);
+vec.normalize();
+```
+
+---
+
+## Inspirations 🌌
 
 The code in `glam-js` is a direct port of the Rust library [glam-rs](https://github.com/bitshifter/glam-rs), which in turn has inspirations for the interface and internals of glam from the
 Rust and C++ worlds. In particular:
@@ -55,7 +95,7 @@ Rust and C++ worlds. In particular:
   and graphics apps
 - `glam` is a play on the name of the popular C++ library [GLM](https://glm.g-truc.net)
 
-## License
+## License 📜
 
 Licensed under either of
 
@@ -66,7 +106,7 @@ Licensed under either of
 
 at your option.
 
-## Contribution
+## Contributing 🤝
 
 Contributions in any form (issues, pull requests, etc.) to this project must
 adhere to Rust's [Code of Conduct](https://www.rust-lang.org/en-US/conduct.html) and NPM's [Code of Conduct](https://docs.npmjs.com/policies/conduct).
@@ -81,7 +121,7 @@ contributors.
 
 Most code in `glam-js` is generated, see the [codegen README] (TBA) for details.
 
-## Attribution
+## Attribution 🙏
 
 `glam` contains code ported from the following C++ libraries:
 
