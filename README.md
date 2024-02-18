@@ -29,7 +29,7 @@
 
 `glam-js` is a TypeScript port of the incredible [glam-rs](https://github.com/bitshifter/glam-rs) library. Its primary objective is to provide a straightforward and efficient 3D math library for game development and computer graphics, written entirely in TypeScript.
 
-Although some features specific to Rust are not available in TypeScript, `glam-js` aims to offer a similar API and performance.
+Although some features specific to Rust are not available in TypeScript, `glam-js` aims to offer a similar API.
 
 Notable Changes:
 
