@@ -5,9 +5,12 @@
     <em>A simple and fast 3D math library for games and graphics. Written in TypeScript.</em>
 </p>
 <p align="center">
-	<img src="https://img.shields.io/github/license/cstrlcs/glam-js?style=flat&color=0080ff" alt="license">
-	<img src="https://img.shields.io/github/last-commit/cstrlcs/glam-js?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-	<img src="https://img.shields.io/github/languages/top/cstrlcs/glam-js?style=flat&color=0080ff" alt="repo-top-language">
+	<img src="https://img.shields.io/github/license/cstrlcs/glam-js?style=flat-square&color=FEF3D8" alt="">
+  <img src="https://img.shields.io/badge/MIT-license?style=flat-square&label=license&color=FEF3D8" alt="">
+	<img src="https://img.shields.io/github/last-commit/cstrlcs/glam-js?style=flat-square&logo=git&logoColor=white&color=FEF3D8" alt="">
+	<img src="https://img.shields.io/github/languages/top/cstrlcs/glam-js?style=flat-square&color=FEF3D8" alt="">
+  <img src="https://img.shields.io/npm/v/glam-js?style=flat-square&color=FEF3D8" alt="">
+  <img src="https://img.shields.io/github/actions/workflow/status/cstrlcs/glam-js/test.yml?style=flat-square" alt="">
 <p>
 <hr>
 
@@ -129,4 +132,4 @@ Most code in `glam-js` is generated, see the [codegen README] (TBA) for details.
 - [Realtime Math](https://github.com/nfrechette/rtm) - MIT License - Copyright (c) 2018 Nicholas Frechette
 - [GLM](https://glm.g-truc.net) - MIT License - Copyright (c) 2005 - G-Truc Creation
 
-See [ATTRIBUTION.md] for details.
+See [ATTRIBUTION.md](ATTRIBUTION.md) for details.
