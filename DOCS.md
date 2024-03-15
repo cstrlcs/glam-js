@@ -483,3 +483,30 @@ The inputs do not need to be unit vectors however they must be non-zero.
   * `approxEq: (rhs: number | Vec4) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
   * `toString: () => string` - Prints out a formatted output of the instance. 
 
+* `Mat` - A 2x2 column major matrix. 
+  * `new: (m00: number, m01: number, m10: number, m11: number) => Mat2` - Creates a new `Mat2` from multiple values. 
+  * `ZERO: any` - All zeroes. (0, 0..) 
+  * `IDENTITY: Mat2` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
+  * `NAN: any` - All `NaN`. (NaN, NaN..) 
+  * `fromCols: (xAxis: Vec2, yAxis: Vec2) => Mat2` - Creates a 2x2 matrix from four column vectors. 
+  * `fromColsArray: (m: number[]) => Mat2` - Creates a 2x2 matrix from four column vectors. 
+  * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
+
+* `Mat` - A 3x3 column major matrix. 
+  * `new: (m00: number, m01: number, m02: number, m10: number, m11: number, m12: number, m20: number, m21: number, m22: number) => Mat3` - Creates a new `Mat3` from multiple values. 
+  * `ZERO: any` - All zeroes. (0, 0..) 
+  * `IDENTITY: Mat3` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
+  * `NAN: any` - All `NaN`. (NaN, NaN..) 
+  * `fromCols: (xAxis: Vec3, yAxis: Vec3, zAxis: Vec3) => Mat3` - Creates a 3x3 matrix from four column vectors. 
+  * `fromColsArray: (m: number[]) => Mat3` - Creates a 3x3 matrix from four column vectors. 
+  * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
+
+* `Mat` - A 4x4 column major matrix. 
+  * `new: (m00: number, m01: number, m02: number, m03: number, m10: number, m11: number, m12: number, m13: number, m20: number, m21: number, m22: number, m23: number, m30: number, m31: number, m32: number, m33: number) => Mat4` - Creates a new `Mat4` from multiple values. 
+  * `ZERO: any` - All zeroes. (0, 0..) 
+  * `IDENTITY: Mat4` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
+  * `NAN: any` - All `NaN`. (NaN, NaN..) 
+  * `fromCols: (xAxis: Vec4, yAxis: Vec4, zAxis: Vec4, wAxis: Vec4) => Mat4` - Creates a 4x4 matrix from four column vectors. 
+  * `fromColsArray: (m: number[]) => Mat4` - Creates a 4x4 matrix from four column vectors. 
+  * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
+

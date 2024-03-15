@@ -50,7 +50,7 @@ Notable Changes:
 - 📦 0 dependencies
 - 🔢 `number` types
   - vectors: `Vec2`, `Vec3` and `Vec4`
-  - ~~square matrices: `Mat2`, `Mat3`, `Mat3A` and `Mat4`~~ (⚠️ WIP)
+  - square matrices: `Mat2`, `Mat3`, `Mat3A` and `Mat4` (⚠️ PARTIAL, untested)
   - ~~a quaternion type: `Quat`~~ (⚠️ WIP)
   - ~~affine transformation types: `Affine2` and `Affine3A`~~ (⚠️ WIP)
 - ☑️ `boolean` types

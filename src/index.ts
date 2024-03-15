@@ -7,3 +7,6 @@ export { BVec4 } from "./BVec4";
 export { Vec2 } from "./Vec2";
 export { Vec3 } from "./Vec3";
 export { Vec4 } from "./Vec4";
+export { Mat2 } from "./Mat2";
+export { Mat3 } from "./Mat3";
+export { Mat4 } from "./Mat4";

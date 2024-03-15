@@ -1,0 +1,69 @@
+// <%= it.warn.replace("<template>", it.template) %>
+
+
+<%
+	const properties = ["xAxis", "yAxis", "zAxis", "wAxis",].splice(0, it.length);
+	const type = `${it.name}${it.length}`;
+%>
+import { Vec<%= it.length %> } from "./";
+
+export class <%= type %> {
+	constructor(
+<% for (const property of properties) { %>
+		public <%= property %>: Vec<%= it.length %>,
+<% } %>
+	) {}
+
+<%
+	const newArgs = [];
+	for (let x = 0; x < it.length; x++) {
+		for (let y = 0; y < it.length; y++) {
+			newArgs.push(`m${x}${y}: number`);
+		}
+	}
+%>
+	/** 
+	 * Creates a new `<%= type %>` from multiple values.
+	 */
+	static new(<%= newArgs.join(", ") %>): <%= type %> {
+		return new <%= type %>(<%= properties.map((value, index) => `new Vec${it.length}(${properties.map((value2, index2) => `m${index}${index2}`).join(", ")})`).join(", ") %>);
+	}
+
+	/** All zeroes. (0, 0..) */
+	static get ZERO() {
+		return <%= type %>.fromCols(<%= properties.map(value => `Vec${it.length}.ZERO`).join(", ") %>);
+	}
+
+	/** All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. */
+	static get IDENTITY() {
+		return <%= type %>.fromCols(<%= properties.map(value => `Vec${it.length}.${value[0].toUpperCase()}`).join(", ") %>);
+	}
+
+	/** All `NaN`. (NaN, NaN..) */
+	static get NAN() {
+		return <%= type %>.fromCols(<%= properties.map(value => `Vec${it.length}.NAN`).join(", ") %>);
+	}
+
+	/** 
+	 * Creates a <%= it.length %>x<%= it.length %> matrix from four column vectors.
+	 */
+	static fromCols(<%= properties.map(value => `${value}: Vec${it.length}`).join(", ") %>): <%= type %> {
+		return new <%= type %>(<%= properties.join(", ") %>);
+	}
+
+	/** 
+	 * Creates a <%= it.length %>x<%= it.length %> matrix from four column vectors.
+	 */
+	static fromColsArray(m: number[]): <%= type %> {
+		return <%= type %>.new(<%= [...Array(it.length * it.length).keys()].map(value => `m[${value}]`).join(", ") %>);
+	}
+
+	/** 
+	 * Creates an array storing data in column major order.
+	 */
+	toColsArray(): number[] {
+		return [
+			<%= properties.map(value => properties.map(value2 => `this.${value}.${value2[0]}`)).flat().join(", ") %>
+		]
+	}
+}

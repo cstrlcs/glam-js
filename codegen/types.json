@@ -34,5 +34,23 @@
 		"template": "./codegen/templates/vec.txt",
 		"description": "A 4-dimensional vector.",
 		"length": 4
+	},
+	{
+		"name": "Mat",
+		"template": "./codegen/templates/mat.txt",
+		"description": "A 2x2 column major matrix.",
+		"length": 2
+	},
+	{
+		"name": "Mat",
+		"template": "./codegen/templates/mat.txt",
+		"description": "A 3x3 column major matrix.",
+		"length": 3
+	},
+	{
+		"name": "Mat",
+		"template": "./codegen/templates/mat.txt",
+		"description": "A 4x4 column major matrix.",
+		"length": 4
 	}
 ]
