@@ -1,6 +1,5 @@
-<p align="center">
-  <img src="logo.png" />
-</p>
+# glam-js
+
 <p align="center">
     <em>A simple and fast 3D math library for games and graphics. Written in TypeScript.</em>
 </p>

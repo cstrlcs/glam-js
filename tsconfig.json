@@ -1,36 +1,10 @@
 {
+  "extends": "@cstrlcs/configs",
   "compilerOptions": {
+    "types": ["bun-types"],
     "paths": {
       "@": ["./src"],
       "@/codegen": ["./codegen"]
-    },
-    "jsx": "react-jsx",
-    "lib": ["ESNext"],
-    "module": "esnext",
-    "moduleDetection": "force",
-    "moduleResolution": "bundler",
-    "target": "esnext",
-    "types": ["bun-types"],
-    "allowImportingTsExtensions": true,
-    "allowJs": false,
-    "allowSyntheticDefaultImports": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "composite": true,
-    "downlevelIteration": true,
-    "esModuleInterop": true,
-    "exactOptionalPropertyTypes": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "skipLibCheck": true,
-    "strict": true
-  },
-  "$schema": "https://json.schemastore.org/tsconfig"
+    }
+  }
 }

@@ -1,42 +1,42 @@
 {
-	"name": "glam-js",
-	"version": "0.0.5",
-	"author": "Lucas Castro <contact@lucascastro.dev>, Cameron Hart <cameron.hart@gmail.com> (glam-rs)",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/cstrlcs/glam-js.git"
-	},
-	"main": "dist/index.js",
-	"devDependencies": {
-		"@biomejs/biome": "latest",
-		"bun-types": "latest",
-		"eta": "3.2.0",
-		"lefthook": "latest",
-		"typescript": "latest"
-	},
-	"bugs": "https://github.com/cstrlcs/glam-js/issues",
-	"description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
-	"files": [
-		"dist"
-	],
-	"homepage": "https://github.com/cstrlcs/glam-js#readme",
-	"keywords": [
-		"gamedev",
-		"math",
-		"matrix",
-		"vector",
-		"quaternion",
-		"bun",
-		"glam",
-		"game-engines"
-	],
-	"license": "MIT or Apache-2.0",
-	"scripts": {
-		"codegen": "bun ./codegen",
-		"build:js": "bun build ./src/index.ts --outdir ./dist --minify",
-		"build:declaration": "tsc --declaration --emitDeclarationOnly --outDir ./dist ./src/index.ts",
-		"release": "bun codegen && bun build:js && bun build:declaration",
-		"postinstall": "lefthook install"
-	},
-	"types": "dist/index.d.ts"
+  "name": "glam-js",
+  "version": "0.0.6",
+  "author": "Lucas Castro <contact@lucascastro.dev>, Cameron Hart <cameron.hart@gmail.com> (glam-rs)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cstrlcs/glam-js.git"
+  },
+  "main": "dist/index.js",
+  "devDependencies": {
+    "@biomejs/biome": "latest",
+    "@cstrlcs/configs": "latest",
+    "bun-types": "latest",
+    "lefthook": "latest",
+    "tinyplate.js": "latest"
+  },
+  "bugs": "https://github.com/cstrlcs/glam-js/issues",
+  "description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/cstrlcs/glam-js#readme",
+  "keywords": [
+    "gamedev",
+    "math",
+    "matrix",
+    "vector",
+    "quaternion",
+    "bun",
+    "glam",
+    "game-engines"
+  ],
+  "license": "MIT or Apache-2.0",
+  "scripts": {
+    "codegen": "bun ./codegen",
+    "build:js": "bun build ./src/index.ts --outdir ./dist --minify",
+    "build:declaration": "tsc --declaration --emitDeclarationOnly --outDir ./dist ./src/index.ts",
+    "release": "bun codegen && bun build:js && bun build:declaration",
+    "postinstall": "lefthook install"
+  },
+  "types": "dist/index.d.ts"
 }

@@ -20,8 +20,15 @@ describe("Vec2", () => {
 		expect(Vec2.MIN).toEqual(new Vec2(Number.MIN_VALUE, Number.MIN_VALUE));
 		expect(Vec2.MAX).toEqual(new Vec2(Number.MAX_VALUE, Number.MAX_VALUE));
 		expect(Vec2.NAN).toEqual(new Vec2(Number.NaN, Number.NaN));
-		expect(Vec2.INFINITY).toEqual(new Vec2(Infinity, Infinity));
-		expect(Vec2.NEG_INFINITY).toEqual(new Vec2(-Infinity, -Infinity));
+
+		expect(Vec2.INFINITY).toEqual(
+			new Vec2(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY),
+		);
+
+		expect(Vec2.NEG_INFINITY).toEqual(
+			new Vec2(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY),
+		);
+
 		expect(Vec2.X).toEqual(new Vec2(1, 0));
 		expect(Vec2.Y).toEqual(new Vec2(0, 1));
 		expect(Vec2.NEG_X).toEqual(new Vec2(-1, 0));
@@ -146,9 +153,9 @@ describe("Vec2", () => {
 	test("Is Finite", () => {
 		expect(new Vec2(0, 0).isFinite()).toBeTrue();
 		expect(new Vec2(-1e-10, 1e10).isFinite()).toBeTrue();
-		expect(new Vec2(Infinity, 0).isFinite()).toBeFalse();
+		expect(new Vec2(Number.POSITIVE_INFINITY, 0).isFinite()).toBeFalse();
 		expect(new Vec2(0, Number.NaN).isFinite()).toBeFalse();
-		expect(new Vec2(0, -Infinity).isFinite()).toBeFalse();
+		expect(new Vec2(0, Number.NEGATIVE_INFINITY).isFinite()).toBeFalse();
 		expect(Vec2.INFINITY.isFinite()).toBeFalse();
 		expect(Vec2.NEG_INFINITY.isFinite()).toBeFalse();
 	});
@@ -159,7 +166,7 @@ describe("Vec2", () => {
 	});
 
 	test("Is NaN Mask", () => {
-		const v0 = new Vec2(NaN, 1);
+		const v0 = new Vec2(Number.NaN, 1);
 		expect(v0.isNaNMask()).toEqual(new BVec2(true, false));
 	});
 
@@ -225,19 +232,21 @@ describe("Vec2", () => {
 		expect(new Vec2(0, 11.123).round().y).toEqual(11);
 		expect(new Vec2(0, 11.499).round().y).toEqual(11);
 
-		expect(new Vec2(-Infinity, Infinity).round()).toEqual(
-			new Vec2(-Infinity, Infinity),
-		);
+		expect(
+			new Vec2(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY).round(),
+		).toEqual(new Vec2(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY));
 
-		expect(new Vec2(NaN, 0).round().x).toBeNaN();
+		expect(new Vec2(Number.NaN, 0).round().x).toBeNaN();
 	});
 
 	test("Floor", () => {
 		expect(new Vec2(1.35, -1.5).floor()).toEqual(new Vec2(1, -2));
-		expect(new Vec2(Infinity, -Infinity).floor()).toEqual(
-			new Vec2(Infinity, -Infinity),
-		);
-		expect(new Vec2(NaN, 0).floor().x).toBeNaN();
+
+		expect(
+			new Vec2(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY).floor(),
+		).toEqual(new Vec2(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY));
+
+		expect(new Vec2(Number.NaN, 0).floor().x).toBeNaN();
 		expect(new Vec2(-2000000.123, 10000000.123).floor()).toEqual(
 			new Vec2(-2000001, 10000000),
 		);
@@ -245,10 +254,11 @@ describe("Vec2", () => {
 
 	test("Ceil", () => {
 		expect(new Vec2(1.35, -1.5).ceil()).toEqual(new Vec2(2, -1));
-		expect(new Vec2(Infinity, -Infinity).ceil()).toEqual(
-			new Vec2(Infinity, -Infinity),
-		);
-		expect(new Vec2(NaN, 0).ceil().x).toBeNaN();
+		expect(
+			new Vec2(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY).ceil(),
+		).toEqual(new Vec2(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY));
+
+		expect(new Vec2(Number.NaN, 0).ceil().x).toBeNaN();
 		expect(new Vec2(-2000000.123, 1000000.123).ceil()).toEqual(
 			new Vec2(-2000000, 1000001),
 		);
@@ -256,10 +266,12 @@ describe("Vec2", () => {
 
 	test("Trunc", () => {
 		expect(new Vec2(1.35, -1.5).trunc()).toEqual(new Vec2(1, -1));
-		expect(new Vec2(Infinity, -Infinity).trunc()).toEqual(
-			new Vec2(Infinity, -Infinity),
-		);
-		expect(new Vec2(0, NaN).trunc().y).toBeNaN();
+
+		expect(
+			new Vec2(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY).trunc(),
+		).toEqual(new Vec2(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY));
+
+		expect(new Vec2(0, Number.NaN).trunc().y).toBeNaN();
 		expect(new Vec2(-0, -2000000.123).trunc()).toEqual(new Vec2(-0, -2000000));
 	});
 
@@ -267,6 +279,7 @@ describe("Vec2", () => {
 		expect(
 			new Vec2(1.35, -1.5).fract().approxEq(new Vec2(0.35, 0.5)),
 		).toBeTrue();
+
 		expect(
 			new Vec2(-2000000.123, 1000000.123)
 				.fract()

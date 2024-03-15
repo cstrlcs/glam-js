@@ -1,4 +1,4 @@
-// <%= warn.replace("<template>", it.template) %>
+// <%= it.warn.replace("<template>", it.template) %>
 
 
 <% 
@@ -41,17 +41,17 @@ export class <%= type %> {
 
 	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
-		return <%= type %>.splat(NaN);
+		return <%= type %>.splat(Number.NaN);
 	}
 
-	/** All `Infinity`. (Infinity, Infinity..) */
+	/** All `Number.POSITIVE_INFINITY`. (Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY..) */
 	static get INFINITY() {
-		return <%= type %>.splat(Infinity);
+		return <%= type %>.splat(Number.POSITIVE_INFINITY);
 	}
 
-	/** All `-Infinity`. (-Infinity, -Infinity..) */
+	/** All `Number.NEGATIVE_INFINITY`. (Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY..) */
 	static get NEG_INFINITY() {
-		return <%= type %>.splat(-Infinity);
+		return <%= type %>.splat(Number.NEGATIVE_INFINITY);
 	}
 
 <% for (const [index, value] of properties.entries()) { %>

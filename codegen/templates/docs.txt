@@ -1,10 +1,10 @@
 # glam-js
 
-<!-- <%= warn.replace("<template>", "templates/docs.eta") %> -->
+<!-- <%= it.warn.replace("<template>", "templates/docs.eta") %> -->
 
 ## API Reference
 
-<% for (const classInfo of it) { %>
+<% for (const classInfo of it.sourceInfos) { %>
 * `<%= classInfo.name %>` - <%= classInfo.description %> 
 <% for (const element of classInfo.elements) { %>
   * `<%= element.name %>: <%= element.type %>` - <%= element.description %> 

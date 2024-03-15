@@ -17,17 +17,32 @@ describe("Vec3", () => {
 		expect(Vec3.ZERO).toEqual(new Vec3(0, 0, 0));
 		expect(Vec3.ONE).toEqual(new Vec3(1, 1, 1));
 		expect(Vec3.NEG_ONE).toEqual(new Vec3(-1, -1, -1));
+
 		expect(Vec3.MIN).toEqual(
 			new Vec3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE),
 		);
+
 		expect(Vec3.MAX).toEqual(
 			new Vec3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE),
 		);
+
 		expect(Vec3.NAN).toEqual(new Vec3(Number.NaN, Number.NaN, Number.NaN));
-		expect(Vec3.INFINITY).toEqual(new Vec3(Infinity, Infinity, Infinity));
-		expect(Vec3.NEG_INFINITY).toEqual(
-			new Vec3(-Infinity, -Infinity, -Infinity),
+		expect(Vec3.INFINITY).toEqual(
+			new Vec3(
+				Number.POSITIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+			),
 		);
+
+		expect(Vec3.NEG_INFINITY).toEqual(
+			new Vec3(
+				Number.NEGATIVE_INFINITY,
+				Number.NEGATIVE_INFINITY,
+				Number.NEGATIVE_INFINITY,
+			),
+		);
+
 		expect(Vec3.X).toEqual(new Vec3(1, 0, 0));
 		expect(Vec3.Y).toEqual(new Vec3(0, 1, 0));
 		expect(Vec3.Z).toEqual(new Vec3(0, 0, 1));
@@ -163,9 +178,16 @@ describe("Vec3", () => {
 	test("Is Finite", () => {
 		expect(new Vec3(0, 0, 0).isFinite()).toBeTrue();
 		expect(new Vec3(-1e-10, 1e10, 1e5).isFinite()).toBeTrue();
-		expect(new Vec3(Infinity, 0, -1e5).isFinite()).toBeFalse();
+		expect(new Vec3(Number.POSITIVE_INFINITY, 0, -1e5).isFinite()).toBeFalse();
 		expect(new Vec3(0, Number.NaN, 1e-2).isFinite()).toBeFalse();
-		expect(new Vec3(0, -Infinity, Infinity).isFinite()).toBeFalse();
+		expect(
+			new Vec3(
+				0,
+				Number.NEGATIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+			).isFinite(),
+		).toBeFalse();
+
 		expect(Vec3.INFINITY.isFinite()).toBeFalse();
 		expect(Vec3.NEG_INFINITY.isFinite()).toBeFalse();
 	});
@@ -176,7 +198,7 @@ describe("Vec3", () => {
 	});
 
 	test("Is NaN Mask", () => {
-		const v0 = new Vec3(NaN, 1, NaN);
+		const v0 = new Vec3(Number.NaN, 1, Number.NaN);
 		expect(v0.isNaNMask()).toEqual(new BVec3(true, false, true));
 	});
 
@@ -259,19 +281,19 @@ describe("Vec3", () => {
 		expect(new Vec3(0, 11.123, 0).round().y).toEqual(11);
 		expect(new Vec3(0, 11.499, 0).round().y).toEqual(11);
 
-		expect(new Vec3(-Infinity, Infinity, 0).round()).toEqual(
-			new Vec3(-Infinity, Infinity, 0),
-		);
+		expect(
+			new Vec3(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, 0).round(),
+		).toEqual(new Vec3(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, 0));
 
-		expect(new Vec3(NaN, 0, 0).round().x).toBeNaN();
+		expect(new Vec3(Number.NaN, 0, 0).round().x).toBeNaN();
 	});
 
 	test("Floor", () => {
 		expect(new Vec3(1.35, -1.5, 0).floor()).toEqual(new Vec3(1, -2, 0));
-		expect(new Vec3(Infinity, -Infinity, 0).floor()).toEqual(
-			new Vec3(Infinity, -Infinity, 0),
-		);
-		expect(new Vec3(NaN, 0, 0).floor().x).toBeNaN();
+		expect(
+			new Vec3(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0).floor(),
+		).toEqual(new Vec3(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0));
+		expect(new Vec3(Number.NaN, 0, 0).floor().x).toBeNaN();
 		expect(new Vec3(-2000000.123, 10000000.123, 0).floor()).toEqual(
 			new Vec3(-2000001, 10000000, 0),
 		);
@@ -279,10 +301,10 @@ describe("Vec3", () => {
 
 	test("Ceil", () => {
 		expect(new Vec3(1.35, -1.5, 0).ceil()).toEqual(new Vec3(2, -1, 0));
-		expect(new Vec3(Infinity, -Infinity, 0).ceil()).toEqual(
-			new Vec3(Infinity, -Infinity, 0),
-		);
-		expect(new Vec3(NaN, 0, 0).ceil().x).toBeNaN();
+		expect(
+			new Vec3(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0).ceil(),
+		).toEqual(new Vec3(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0));
+		expect(new Vec3(Number.NaN, 0, 0).ceil().x).toBeNaN();
 		expect(new Vec3(-2000000.123, 1000000.123, 0).ceil()).toEqual(
 			new Vec3(-2000000, 1000001, 0),
 		);
@@ -290,10 +312,10 @@ describe("Vec3", () => {
 
 	test("Trunc", () => {
 		expect(new Vec3(1.35, -1.5, 0).trunc()).toEqual(new Vec3(1, -1, 0));
-		expect(new Vec3(Infinity, -Infinity, 0).trunc()).toEqual(
-			new Vec3(Infinity, -Infinity, 0),
-		);
-		expect(new Vec3(0, NaN, 0).trunc().y).toBeNaN();
+		expect(
+			new Vec3(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0).trunc(),
+		).toEqual(new Vec3(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0));
+		expect(new Vec3(0, Number.NaN, 0).trunc().y).toBeNaN();
 		expect(new Vec3(-0, -2000000.123, 0).trunc()).toEqual(
 			new Vec3(-0, -2000000, 0),
 		);

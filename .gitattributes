@@ -1,1 +1,1 @@
-*.eta linguist-language=TypeScript
+./codegen/templates/*.txt linguist-language=TypeScript

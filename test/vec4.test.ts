@@ -40,11 +40,21 @@ describe("Vec4", () => {
 		);
 
 		expect(Vec4.INFINITY).toEqual(
-			new Vec4(Infinity, Infinity, Infinity, Infinity),
+			new Vec4(
+				Number.POSITIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+			),
 		);
 
 		expect(Vec4.NEG_INFINITY).toEqual(
-			new Vec4(-Infinity, -Infinity, -Infinity, -Infinity),
+			new Vec4(
+				Number.NEGATIVE_INFINITY,
+				Number.NEGATIVE_INFINITY,
+				Number.NEGATIVE_INFINITY,
+				Number.NEGATIVE_INFINITY,
+			),
 		);
 
 		expect(Vec4.X).toEqual(new Vec4(1, 0, 0, 0));
@@ -193,9 +203,18 @@ describe("Vec4", () => {
 	test("Is Finite", () => {
 		expect(new Vec4(0, 0, 0, 0).isFinite()).toBeTrue();
 		expect(new Vec4(-1e-10, 1e10, 1e5, 0).isFinite()).toBeTrue();
-		expect(new Vec4(Infinity, 0, -1e5, 0).isFinite()).toBeFalse();
+		expect(
+			new Vec4(Number.POSITIVE_INFINITY, 0, -1e5, 0).isFinite(),
+		).toBeFalse();
 		expect(new Vec4(0, Number.NaN, 1e-2, 0).isFinite()).toBeFalse();
-		expect(new Vec4(0, -Infinity, Infinity, 0).isFinite()).toBeFalse();
+		expect(
+			new Vec4(
+				0,
+				Number.NEGATIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+				0,
+			).isFinite(),
+		).toBeFalse();
 		expect(Vec4.INFINITY.isFinite()).toBeFalse();
 		expect(Vec4.NEG_INFINITY.isFinite()).toBeFalse();
 	});
@@ -206,7 +225,7 @@ describe("Vec4", () => {
 	});
 
 	test("Is NaN Mask", () => {
-		const v0 = new Vec4(NaN, 1, NaN, 0);
+		const v0 = new Vec4(Number.NaN, 1, Number.NaN, 0);
 		expect(v0.isNaNMask()).toEqual(new BVec4(true, false, true, false));
 	});
 
@@ -289,19 +308,33 @@ describe("Vec4", () => {
 		expect(new Vec4(0, 11.123, 0, 0).round().y).toEqual(11);
 		expect(new Vec4(0, 11.499, 0, 0).round().y).toEqual(11);
 
-		expect(new Vec4(-Infinity, Infinity, 0, 0).round()).toEqual(
-			new Vec4(-Infinity, Infinity, 0, 0),
+		expect(
+			new Vec4(
+				Number.NEGATIVE_INFINITY,
+				Number.POSITIVE_INFINITY,
+				0,
+				0,
+			).round(),
+		).toEqual(
+			new Vec4(Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, 0, 0),
 		);
 
-		expect(new Vec4(NaN, 0, 0, 0).round().x).toBeNaN();
+		expect(new Vec4(Number.NaN, 0, 0, 0).round().x).toBeNaN();
 	});
 
 	test("Floor", () => {
 		expect(new Vec4(1.35, -1.5, 0, 0).floor()).toEqual(new Vec4(1, -2, 0, 0));
-		expect(new Vec4(Infinity, -Infinity, 0, 0).floor()).toEqual(
-			new Vec4(Infinity, -Infinity, 0, 0),
+		expect(
+			new Vec4(
+				Number.POSITIVE_INFINITY,
+				Number.NEGATIVE_INFINITY,
+				0,
+				0,
+			).floor(),
+		).toEqual(
+			new Vec4(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0, 0),
 		);
-		expect(new Vec4(NaN, 0, 0, 0).floor().x).toBeNaN();
+		expect(new Vec4(Number.NaN, 0, 0, 0).floor().x).toBeNaN();
 		expect(new Vec4(-2000000.123, 10000000.123, 0, 0).floor()).toEqual(
 			new Vec4(-2000001, 10000000, 0, 0),
 		);
@@ -309,11 +342,13 @@ describe("Vec4", () => {
 
 	test("Ceil", () => {
 		expect(new Vec4(1.35, -1.5, 0, 0).ceil()).toEqual(new Vec4(2, -1, 0, 0));
-		expect(new Vec4(Infinity, -Infinity, 0, 0).ceil()).toEqual(
-			new Vec4(Infinity, -Infinity, 0, 0),
+		expect(
+			new Vec4(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0, 0).ceil(),
+		).toEqual(
+			new Vec4(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0, 0),
 		);
 
-		expect(new Vec4(NaN, 0, 0, 0).ceil().x).toBeNaN();
+		expect(new Vec4(Number.NaN, 0, 0, 0).ceil().x).toBeNaN();
 
 		expect(new Vec4(-2000000.123, 1000000.123, 0, 0).ceil()).toEqual(
 			new Vec4(-2000000, 1000001, 0, 0),
@@ -323,11 +358,18 @@ describe("Vec4", () => {
 	test("Trunc", () => {
 		expect(new Vec4(1.35, -1.5, 0, 0).trunc()).toEqual(new Vec4(1, -1, 0, 0));
 
-		expect(new Vec4(Infinity, -Infinity, 0, 0).trunc()).toEqual(
-			new Vec4(Infinity, -Infinity, 0, 0),
+		expect(
+			new Vec4(
+				Number.POSITIVE_INFINITY,
+				Number.NEGATIVE_INFINITY,
+				0,
+				0,
+			).trunc(),
+		).toEqual(
+			new Vec4(Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, 0, 0),
 		);
 
-		expect(new Vec4(0, NaN, 0, 0).trunc().y).toBeNaN();
+		expect(new Vec4(0, Number.NaN, 0, 0).trunc().y).toBeNaN();
 
 		expect(new Vec4(-0, -2000000.123, 0, 0).trunc()).toEqual(
 			new Vec4(-0, -2000000, 0, 0),

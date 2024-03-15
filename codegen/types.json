@@ -1,37 +1,37 @@
 [
 	{
 		"name": "BVec",
-		"template": "templates/bvec.eta",
+		"template": "./codegen/templates/bvec.txt",
 		"description": "A 2-dimensional boolean vector.",
 		"length": 2
 	},
 	{
 		"name": "BVec",
-		"template": "templates/bvec.eta",
+		"template": "./codegen/templates/bvec.txt",
 		"description": "A 3-dimensional boolean vector.",
 		"length": 3
 	},
 	{
 		"name": "BVec",
-		"template": "templates/bvec.eta",
+		"template": "./codegen/templates/bvec.txt",
 		"description": "A 4-dimensional boolean vector.",
 		"length": 4
 	},
 	{
 		"name": "Vec",
-		"template": "templates/vec.eta",
+		"template": "./codegen/templates/vec.txt",
 		"description": "A 2-dimensional vector.",
 		"length": 2
 	},
 	{
 		"name": "Vec",
-		"template": "templates/vec.eta",
+		"template": "./codegen/templates/vec.txt",
 		"description": "A 3-dimensional vector.",
 		"length": 3
 	},
 	{
 		"name": "Vec",
-		"template": "templates/vec.eta",
+		"template": "./codegen/templates/vec.txt",
 		"description": "A 4-dimensional vector.",
 		"length": 4
 	}
