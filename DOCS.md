@@ -87,6 +87,7 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `select: (mask: BVec2, ifTrue: Vec2, ifFalse: Vec2) => Vec2` - Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use for each element.
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number]) => Vec2` - Creates a new vector from an array. 
+  * `clone: () => Vec2` - Returns a new vector with the same elements, so it can be mutated independently. 
   * `toArray: () => [number, number]` - [x, y] 
   * `dot: (rhs: Vec2) => number` - Computes the dot product of `Vec2` and `rhs`. 
   * `dotIntoVec: (rhs: Vec2) => Vec2` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
@@ -209,6 +210,21 @@ it will be like a rotation with a multiplication by `Vec2`'s length.
   * `rem: (rhs: number | Vec2) => Vec2` - Divides a Vec2 by another Vector, or by a number and return its remainder
 (this.x % rhs.x, this.y % rhs.y..) or (this.x % rhs, this.y % rhs..) 
   * `neg: () => Vec2` - Returns (-this.x, -this.y..) 
+  * `addAssign: (rhs: number | Vec2) => this` - In-place version of `add`: computes `this += rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `subAssign: (rhs: number | Vec2) => this` - In-place version of `sub`: computes `this -= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `mulAssign: (rhs: number | Vec2) => this` - In-place version of `mul`: computes `this *= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `divAssign: (rhs: number | Vec2) => this` - In-place version of `div`: computes `this /= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `remAssign: (rhs: number | Vec2) => this` - In-place version of `rem`: computes `this %= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
   * `eq: (rhs: number | Vec2) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec2) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec2) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
@@ -237,6 +253,7 @@ it will be like a rotation with a multiplication by `Vec2`'s length.
   * `select: (mask: BVec3, ifTrue: Vec3, ifFalse: Vec3) => Vec3` - Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use for each element.
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number, number]) => Vec3` - Creates a new vector from an array. 
+  * `clone: () => Vec3` - Returns a new vector with the same elements, so it can be mutated independently. 
   * `toArray: () => [number, number, number]` - [x, y, z] 
   * `dot: (rhs: Vec3) => number` - Computes the dot product of `Vec3` and `rhs`. 
   * `dotIntoVec: (rhs: Vec3) => Vec3` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
@@ -355,6 +372,21 @@ basis. That is, all three vectors are orthogonal to each other and are normalize
   * `rem: (rhs: number | Vec3) => Vec3` - Divides a Vec3 by another Vector, or by a number and return its remainder
 (this.x % rhs.x, this.y % rhs.y..) or (this.x % rhs, this.y % rhs..) 
   * `neg: () => Vec3` - Returns (-this.x, -this.y..) 
+  * `addAssign: (rhs: number | Vec3) => this` - In-place version of `add`: computes `this += rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `subAssign: (rhs: number | Vec3) => this` - In-place version of `sub`: computes `this -= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `mulAssign: (rhs: number | Vec3) => this` - In-place version of `mul`: computes `this *= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `divAssign: (rhs: number | Vec3) => this` - In-place version of `div`: computes `this /= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `remAssign: (rhs: number | Vec3) => this` - In-place version of `rem`: computes `this %= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
   * `eq: (rhs: number | Vec3) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec3) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec3) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 
@@ -386,6 +418,7 @@ basis. That is, all three vectors are orthogonal to each other and are normalize
   * `select: (mask: BVec4, ifTrue: Vec4, ifFalse: Vec4) => Vec4` - Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use for each element.
 A true element in the mask uses the corresponding element from `ifTrue`, and false uses the element from `ifFalse`. 
   * `fromArray: (a: [number, number, number, number]) => Vec4` - Creates a new vector from an array. 
+  * `clone: () => Vec4` - Returns a new vector with the same elements, so it can be mutated independently. 
   * `toArray: () => [number, number, number, number]` - [x, y, z, w] 
   * `dot: (rhs: Vec4) => number` - Computes the dot product of `Vec4` and `rhs`. 
   * `dotIntoVec: (rhs: Vec4) => Vec4` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
@@ -496,6 +529,21 @@ The inputs do not need to be unit vectors however they must be non-zero.
   * `rem: (rhs: number | Vec4) => Vec4` - Divides a Vec4 by another Vector, or by a number and return its remainder
 (this.x % rhs.x, this.y % rhs.y..) or (this.x % rhs, this.y % rhs..) 
   * `neg: () => Vec4` - Returns (-this.x, -this.y..) 
+  * `addAssign: (rhs: number | Vec4) => this` - In-place version of `add`: computes `this += rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `subAssign: (rhs: number | Vec4) => this` - In-place version of `sub`: computes `this -= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `mulAssign: (rhs: number | Vec4) => this` - In-place version of `mul`: computes `this *= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `divAssign: (rhs: number | Vec4) => this` - In-place version of `div`: computes `this /= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
+  * `remAssign: (rhs: number | Vec4) => this` - In-place version of `rem`: computes `this %= rhs` for each element.
+Mutates and returns this vector instead of allocating a new one, which makes it
+the cheapest option for hot paths (e.g. updating positions every frame). 
   * `eq: (rhs: number | Vec4) => boolean` - Compares if the vector is equal to another. 
   * `ne: (rhs: number | Vec4) => boolean` - Compares if the vector is not equal to another. 
   * `approxEq: (rhs: number | Vec4) => boolean` - Compares if the vector is approximately equal to another, by the threshold of 1e-6. 

@@ -103,6 +103,11 @@ export class <%= type %> {
 		return new <%= type %>(<%= properties.map((_, index) => `a[${index}]`).join(', ') %>);
 	}
 
+	/** Returns a new vector with the same elements, so it can be mutated independently. */
+	clone(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `this.${value}`).join(', ') %>);
+	}
+
 	/** [<%= properties.join(', ') %>] */
 	toArray(): [<%= properties.map(value => `number`).join(', ') %>] {
 		return [<%= properties.map(value => `this.${value}`).join(', ') %>];
@@ -678,6 +683,27 @@ export class <%= type %> {
 		return new <%= type %>(<%= properties.map(value => `-this.${value}`).join(', ') %>);
 	}
 
+<% for (const [name, op] of [["add", "+"], ["sub", "-"], ["mul", "*"], ["div", "/"], ["rem", "%"]]) { %>
+	/**
+	 * In-place version of `<%= name %>`: computes `this <%= op %>= rhs` for each element.
+	 * Mutates and returns this vector instead of allocating a new one, which makes it
+	 * the cheapest option for hot paths (e.g. updating positions every frame).
+	 */
+	<%= name %>Assign(rhs: <%= type %> | number): this {
+		if (typeof rhs === "number") {
+<% for (const value of properties) { %>
+			this.<%= value %> <%= op %>= rhs;
+<% } %>
+			return this;
+		}
+
+<% for (const value of properties) { %>
+		this.<%= value %> <%= op %>= rhs.<%= value %>;
+<% } %>
+		return this;
+	}
+
+<% } %>
 	/** Compares if the vector is equal to another. */
 	eq(rhs: <%= type %> | number): boolean {
 		if (typeof rhs === "number") {

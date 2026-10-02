@@ -454,4 +454,31 @@ describe("Vec3", () => {
 		expect(v0.ne(v1)).toBeTrue();
 		expect(v0.ne(2)).toBeTrue();
 	});
+
+	test("Assign Operators", () => {
+		const v = new Vec3(1, 2, 3);
+
+		expect(v.addAssign(new Vec3(1, 2, 3))).toBe(v);
+		expect(v).toEqual(new Vec3(2, 4, 6));
+		expect(v.addAssign(1)).toEqual(new Vec3(3, 5, 7));
+		expect(v.subAssign(new Vec3(1, 1, 1))).toEqual(new Vec3(2, 4, 6));
+		expect(v.subAssign(2)).toEqual(new Vec3(0, 2, 4));
+		expect(v.mulAssign(new Vec3(2, 3, 4))).toEqual(new Vec3(0, 6, 16));
+		expect(v.mulAssign(0.5)).toEqual(new Vec3(0, 3, 8));
+		expect(v.divAssign(new Vec3(1, 3, 2))).toEqual(new Vec3(0, 1, 4));
+		expect(v.divAssign(2)).toEqual(new Vec3(0, 0.5, 2));
+		expect(v.remAssign(new Vec3(1, 1, 3))).toEqual(new Vec3(0, 0.5, 2));
+		expect(v.remAssign(1.5)).toEqual(new Vec3(0, 0.5, 0.5));
+	});
+
+	test("Clone", () => {
+		const v = new Vec3(1, 2, 3);
+		const c = v.clone();
+
+		expect(c).toEqual(v);
+		expect(c).not.toBe(v);
+
+		c.x = 5;
+		expect(v.x).toEqual(1);
+	});
 });

@@ -155,6 +155,11 @@ export class Vec4 {
 		return new Vec4(a[0], a[1], a[2], a[3]);
 	}
 
+	/** Returns a new vector with the same elements, so it can be mutated independently. */
+	clone(): Vec4 {
+		return new Vec4(this.x, this.y, this.z, this.w);
+	}
+
 	/** [x, y, z, w] */
 	toArray(): [number, number, number, number] {
 		return [this.x, this.y, this.z, this.w];
@@ -813,6 +818,111 @@ export class Vec4 {
 	/** Returns (-this.x, -this.y..) */
 	neg(): Vec4 {
 		return new Vec4(-this.x, -this.y, -this.z, -this.w);
+	}
+
+	/**
+	 * In-place version of `add`: computes `this += rhs` for each element.
+	 * Mutates and returns this vector instead of allocating a new one, which makes it
+	 * the cheapest option for hot paths (e.g. updating positions every frame).
+	 */
+	addAssign(rhs: Vec4 | number): this {
+		if (typeof rhs === "number") {
+			this.x += rhs;
+			this.y += rhs;
+			this.z += rhs;
+			this.w += rhs;
+			return this;
+		}
+
+		this.x += rhs.x;
+		this.y += rhs.y;
+		this.z += rhs.z;
+		this.w += rhs.w;
+		return this;
+	}
+
+	/**
+	 * In-place version of `sub`: computes `this -= rhs` for each element.
+	 * Mutates and returns this vector instead of allocating a new one, which makes it
+	 * the cheapest option for hot paths (e.g. updating positions every frame).
+	 */
+	subAssign(rhs: Vec4 | number): this {
+		if (typeof rhs === "number") {
+			this.x -= rhs;
+			this.y -= rhs;
+			this.z -= rhs;
+			this.w -= rhs;
+			return this;
+		}
+
+		this.x -= rhs.x;
+		this.y -= rhs.y;
+		this.z -= rhs.z;
+		this.w -= rhs.w;
+		return this;
+	}
+
+	/**
+	 * In-place version of `mul`: computes `this *= rhs` for each element.
+	 * Mutates and returns this vector instead of allocating a new one, which makes it
+	 * the cheapest option for hot paths (e.g. updating positions every frame).
+	 */
+	mulAssign(rhs: Vec4 | number): this {
+		if (typeof rhs === "number") {
+			this.x *= rhs;
+			this.y *= rhs;
+			this.z *= rhs;
+			this.w *= rhs;
+			return this;
+		}
+
+		this.x *= rhs.x;
+		this.y *= rhs.y;
+		this.z *= rhs.z;
+		this.w *= rhs.w;
+		return this;
+	}
+
+	/**
+	 * In-place version of `div`: computes `this /= rhs` for each element.
+	 * Mutates and returns this vector instead of allocating a new one, which makes it
+	 * the cheapest option for hot paths (e.g. updating positions every frame).
+	 */
+	divAssign(rhs: Vec4 | number): this {
+		if (typeof rhs === "number") {
+			this.x /= rhs;
+			this.y /= rhs;
+			this.z /= rhs;
+			this.w /= rhs;
+			return this;
+		}
+
+		this.x /= rhs.x;
+		this.y /= rhs.y;
+		this.z /= rhs.z;
+		this.w /= rhs.w;
+		return this;
+	}
+
+	/**
+	 * In-place version of `rem`: computes `this %= rhs` for each element.
+	 * Mutates and returns this vector instead of allocating a new one, which makes it
+	 * the cheapest option for hot paths (e.g. updating positions every frame).
+	 */
+	remAssign(rhs: Vec4 | number): this {
+		if (typeof rhs === "number") {
+			this.x %= rhs;
+			this.y %= rhs;
+			this.z %= rhs;
+			this.w %= rhs;
+			return this;
+		}
+
+		this.x %= rhs.x;
+		this.y %= rhs.y;
+		this.z %= rhs.z;
+		this.w %= rhs.w;
+		return this;
 	}
 
 	/** Compares if the vector is equal to another. */
