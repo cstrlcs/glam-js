@@ -6,20 +6,27 @@
 	const type = `${it.name}${it.length}`;
 %>
 export class <%= type %> {
-	constructor(
+	// Fields are `declare`d instead of parameter properties so no class fields
+	// are emitted (see the note in `Vec2`).
 <% for (const property of properties) { %>
-		public <%= property %>: boolean,
+	/** The `<%= property %>` element. */
+	declare <%= property %>: boolean;
 <% } %>
-	) {}
 
-  /** All false. (false, false..) */
+	constructor(<%= properties.map(value => `${value}: boolean`).join(", ") %>) {
+<% for (const property of properties) { %>
+		this.<%= property %> = <%= property %>;
+<% } %>
+	}
+
+	/** All false. (false, false..) */
 	static get FALSE() {
-		return <%= type %>.splat(false);
+		return new <%= type %>(<%= properties.map(value => 'false').join(', ') %>);
 	}
 
 	/** All true. (true, true..) */
-	static get TRUE() { 
-		return <%= type %>.splat(true);
+	static get TRUE() {
+		return new <%= type %>(<%= properties.map(value => 'true').join(', ') %>);
 	}
 
 	/** Creates a vector with all elements set to v. */
@@ -32,7 +39,7 @@ export class <%= type %> {
 	 * A true element results in a 1 bit and a false element in a 0 bit. Element x goes into the first lowest bit, element y into the second, etc.
 	 */
 	bitmask(): number {
-		return <%= properties.map((value, index) => `(Number(this.${value})${index > 0 ? ` << ${index}` : ''})`).join(' | ') %>;
+		return <%= properties.map((value, index) => `(this.${value} ? ${1 << index} : 0)`).join(' | ') %>;
 	}
 
 	/** Returns true if any of the elements are true, false otherwise. */
@@ -47,20 +54,35 @@ export class <%= type %> {
 
 	/** Tests the value at index. */
 	test(index: <%= [...Array(it.length).keys()].join(" | ") %>): boolean | undefined {
-		return [<%= properties.map(value => `this.${value}`).join(", ") %>][index];
+		switch (index) {
+<% for (const [index, value] of properties.entries()) { %>
+			case <%= index %>:
+				return this.<%= value %>;
+<% } %>
+			default:
+				return undefined;
+		}
 	}
 
 	/** Sets the element at index. */
 	set(index: <%= [...Array(it.length).keys()].join(" | ") %>, value: boolean): void {
-		const property = [<%= properties.map(value => `"${value}"`).join(", ") %>][index] as <%= properties.map(value => `"${value}"`).join(" | ") %>;
-		this[property] = value;
+		switch (index) {
+<% for (const [index, property] of properties.entries()) { %>
+			case <%= index %>: {
+				this.<%= property %> = value;
+				break;
+			}
+<% } %>
+			default:
+				break;
+		}
 	}
 
 	/** Performs the & operation. */
 	bitand(rhs: <%= type %>): <%= type %> {
 		return new <%= type %>(
 <% for (const property of properties) { %>
-			Boolean(Number(this.<%= property %>) & Number(rhs.<%= property %>)),
+			this.<%= property %> && rhs.<%= property %>,
 <% } %>
 		);
 	}
@@ -69,7 +91,7 @@ export class <%= type %> {
 	bitor(rhs: <%= type %>): <%= type %> {
 		return new <%= type %>(
 <% for (const property of properties) { %>
-			Boolean(Number(this.<%= property %>) | Number(rhs.<%= property %>)),
+			this.<%= property %> || rhs.<%= property %>,
 <% } %>
 		);
 	}
@@ -78,7 +100,7 @@ export class <%= type %> {
 	bitxor(rhs: <%= type %>): <%= type %> {
 		return new <%= type %>(
 <% for (const property of properties) { %>
-			Boolean(Number(this.<%= property %>) ^ Number(rhs.<%= property %>)),
+			this.<%= property %> !== rhs.<%= property %>,
 <% } %>
 		);
 	}
@@ -90,20 +112,20 @@ export class <%= type %> {
 
 	/** This method tests for self and other values to be equal, and is used by ==. */
 	eq(rhs: <%= type %> | boolean): boolean {
-		if (rhs instanceof <%= type %>) {
-			return <%= properties.map(value => `this.${value} === rhs.${value}`).join(' && ') %>;
+		if (typeof rhs === "boolean") {
+			return <%= properties.map(value => `this.${value} === rhs`).join(' && ') %>;
 		}
 
-		return <%= properties.map(value => `this.${value} === rhs`).join(' && ') %>;
+		return <%= properties.map(value => `this.${value} === rhs.${value}`).join(' && ') %>;
 	}
 
 	/** This method tests for !=. */
 	ne(rhs: <%= type %> | boolean): boolean {
-		if (rhs instanceof <%= type %>) {
-			return <%= properties.map(value => `this.${value} !== rhs.${value}`).join(' || ') %>;
+		if (typeof rhs === "boolean") {
+			return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
 		}
 
-		return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
+		return <%= properties.map(value => `this.${value} !== rhs.${value}`).join(' || ') %>;
 	}
 
 	/** Prints out a formatted output of the instance. */

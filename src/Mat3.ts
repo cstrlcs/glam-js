@@ -3,11 +3,20 @@
 import { Vec3 } from "./";
 
 export class Mat3 {
-	constructor(
-		public xAxis: Vec3,
-		public yAxis: Vec3,
-		public zAxis: Vec3,
-	) {}
+	// Fields are `declare`d instead of parameter properties so no class fields
+	// are emitted (see the note in `Vec2`).
+	/** Column 0 of the matrix (the `x` axis). */
+	declare xAxis: Vec3;
+	/** Column 1 of the matrix (the `y` axis). */
+	declare yAxis: Vec3;
+	/** Column 2 of the matrix (the `z` axis). */
+	declare zAxis: Vec3;
+
+	constructor(xAxis: Vec3, yAxis: Vec3, zAxis: Vec3) {
+		this.xAxis = xAxis;
+		this.yAxis = yAxis;
+		this.zAxis = zAxis;
+	}
 
 	/**
 	 * Creates a new `Mat3` from multiple values.
@@ -32,17 +41,21 @@ export class Mat3 {
 
 	/** All zeroes. (0, 0..) */
 	static get ZERO() {
-		return Mat3.fromCols(Vec3.ZERO, Vec3.ZERO, Vec3.ZERO);
+		return new Mat3(new Vec3(0, 0, 0), new Vec3(0, 0, 0), new Vec3(0, 0, 0));
 	}
 
 	/** All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. */
 	static get IDENTITY() {
-		return Mat3.fromCols(Vec3.X, Vec3.Y, Vec3.Z);
+		return new Mat3(new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(0, 0, 1));
 	}
 
 	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
-		return Mat3.fromCols(Vec3.NAN, Vec3.NAN, Vec3.NAN);
+		return new Mat3(
+			new Vec3(Number.NaN, Number.NaN, Number.NaN),
+			new Vec3(Number.NaN, Number.NaN, Number.NaN),
+			new Vec3(Number.NaN, Number.NaN, Number.NaN),
+		);
 	}
 
 	/**

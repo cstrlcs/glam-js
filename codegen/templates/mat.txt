@@ -8,11 +8,18 @@
 import { Vec<%= it.length %> } from "./";
 
 export class <%= type %> {
-	constructor(
-<% for (const property of properties) { %>
-		public <%= property %>: Vec<%= it.length %>,
+	// Fields are `declare`d instead of parameter properties so no class fields
+	// are emitted (see the note in `Vec2`).
+<% for (const [index, property] of properties.entries()) { %>
+	/** Column <%= index %> of the matrix (the `<%= property[0] %>` axis). */
+	declare <%= property %>: Vec<%= it.length %>;
 <% } %>
-	) {}
+
+	constructor(<%= properties.map(value => `${value}: Vec${it.length}`).join(", ") %>) {
+<% for (const property of properties) { %>
+		this.<%= property %> = <%= property %>;
+<% } %>
+	}
 
 <%
 	const newArgs = [];
@@ -31,17 +38,17 @@ export class <%= type %> {
 
 	/** All zeroes. (0, 0..) */
 	static get ZERO() {
-		return <%= type %>.fromCols(<%= properties.map(value => `Vec${it.length}.ZERO`).join(", ") %>);
+		return new <%= type %>(<%= properties.map(() => `new Vec${it.length}(${properties.map(() => '0').join(", ")})`).join(", ") %>);
 	}
 
 	/** All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. */
 	static get IDENTITY() {
-		return <%= type %>.fromCols(<%= properties.map(value => `Vec${it.length}.${value[0].toUpperCase()}`).join(", ") %>);
+		return new <%= type %>(<%= properties.map((_, col) => `new Vec${it.length}(${properties.map((_, row) => col === row ? '1' : '0').join(", ")})`).join(", ") %>);
 	}
 
 	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
-		return <%= type %>.fromCols(<%= properties.map(value => `Vec${it.length}.NAN`).join(", ") %>);
+		return new <%= type %>(<%= properties.map(() => `new Vec${it.length}(${properties.map(() => 'Number.NaN').join(", ")})`).join(", ") %>);
 	}
 
 	/** 

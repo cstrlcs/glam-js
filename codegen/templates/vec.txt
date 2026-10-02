@@ -8,50 +8,58 @@
 import { B<%= type %> } from "./";
 
 export class <%= type %> {
-	constructor(
+	// Fields are `declare`d and assigned in the constructor instead of using
+	// parameter properties: those emit class fields, which start as `undefined`
+	// and make V8 allocate a new heap number on every write to `x`, `y`..
 <% for (const property of properties) { %>
-		public <%= property %>: number,
+	/** The `<%= property %>` element. */
+	declare <%= property %>: number;
 <% } %>
-	) {}
+
+	constructor(<%= properties.map(value => `${value}: number`).join(", ") %>) {
+<% for (const property of properties) { %>
+		this.<%= property %> = <%= property %>;
+<% } %>
+	}
 
 	/** All zeroes. (0, 0..) */
 	static get ZERO() {
-		return <%= type %>.splat(0);
+		return new <%= type %>(<%= properties.map(value => '0').join(', ') %>);
 	}
 
 	/** All ones. (1, 1..) */
 	static get ONE() {
-		return <%= type %>.splat(1);
+		return new <%= type %>(<%= properties.map(value => '1').join(', ') %>);
 	}
 
 	/** All negative ones. (-1, -1..) */
 	static get NEG_ONE() {
-		return <%= type %>.splat(-1);
+		return new <%= type %>(<%= properties.map(value => '-1').join(', ') %>);
 	}
 
 	/** All `Number.MIN_VALUE`. (5e-324, 5e-324..) */
 	static get MIN() {
-		return <%= type %>.splat(Number.MIN_VALUE);
+		return new <%= type %>(<%= properties.map(value => 'Number.MIN_VALUE').join(', ') %>);
 	}
 
 	/** All `Number.MAX_VALUE`. (1.7976931348623157e+308, 1.7976931348623157e+308..) */
 	static get MAX() {
-		return <%= type %>.splat(Number.MAX_VALUE);
+		return new <%= type %>(<%= properties.map(value => 'Number.MAX_VALUE').join(', ') %>);
 	}
 
 	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
-		return <%= type %>.splat(Number.NaN);
+		return new <%= type %>(<%= properties.map(value => 'Number.NaN').join(', ') %>);
 	}
 
 	/** All `Number.POSITIVE_INFINITY`. (Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY..) */
 	static get INFINITY() {
-		return <%= type %>.splat(Number.POSITIVE_INFINITY);
+		return new <%= type %>(<%= properties.map(value => 'Number.POSITIVE_INFINITY').join(', ') %>);
 	}
 
 	/** All `Number.NEGATIVE_INFINITY`. (Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY..) */
 	static get NEG_INFINITY() {
-		return <%= type %>.splat(Number.NEGATIVE_INFINITY);
+		return new <%= type %>(<%= properties.map(value => 'Number.NEGATIVE_INFINITY').join(', ') %>);
 	}
 
 <% for (const [index, value] of properties.entries()) { %>
@@ -70,7 +78,7 @@ export class <%= type %> {
 <% } %>
 	/** The unit axes. [<%= properties.map(value => `${type}.${value.toUpperCase()}`).join(", ") %>] */
 	static get AXES() {
-		return [<%= properties.map(value => `${type}.${value.toUpperCase()}`).join(", ") %>];
+		return [<%= properties.map((_, index) => `new ${type}(${properties.map((_, index2) => index === index2 ? '1' : '0').join(', ')})`).join(", ") %>];
 	}
 
 	/** Creates a vector with all elements set to v. (<%= properties.map(value => 'v').join(', ') %>) */
@@ -84,8 +92,8 @@ export class <%= type %> {
 	 */
 	static select(mask: B<%= type %>, ifTrue: <%= type %>, ifFalse: <%= type %>): <%= type %> {
 		return new <%= type %>(
-<% for (const [index, value] of properties.entries()) { %>
-			mask.test(<%= index %>) ? ifTrue.<%= value %> : ifFalse.<%= value %>,
+<% for (const value of properties) { %>
+			mask.<%= value %> ? ifTrue.<%= value %> : ifFalse.<%= value %>,
 <% } %>
 		);
 	}
@@ -139,7 +147,7 @@ export class <%= type %> {
 
 	/** Component-wise clamping of values. */
 	clamp(min: <%= type %>, max: <%= type %>): <%= type %> {
-		return this.max(min).min(max);
+		return new <%= type %>(<%= properties.map(value => `Math.min(Math.max(this.${value}, min.${value}), max.${value})`).join(", ") %>);
 	}
 
 	/** 
@@ -226,7 +234,7 @@ export class <%= type %> {
 	 * into the first lowest bit, element `y` into the second, etc.
 	 */
 	isNegativeBitmask(): number {
-		return <%= properties.map((value, index) => `(Number(this.${value} < 0)${index > 0 ? ` << ${index}` : ''})`).join(' | ') %>;
+		return <%= properties.map((value, index) => `(this.${value} < 0 ? ${1 << index} : 0)`).join(' | ') %>;
 	}
 
 	/** Returns `true` if, and only if, all elements are finite. If any element is either `NaN`, positive or negative infinity, this will return `false`. */
@@ -269,12 +277,15 @@ export class <%= type %> {
 
 	/** Computes the Euclidean distance between two points in space. */
 	distance(rhs: <%= type %>): number {
-		return this.sub(rhs).length();
+		return Math.sqrt(this.distanceSquared(rhs));
 	}
 
 	/** Compute the squared euclidean distance between two points in space. */
 	distanceSquared(rhs: <%= type %>): number {
-		return this.sub(rhs).lengthSquared();
+<% for (const value of properties) { %>
+		const <%= value %> = this.<%= value %> - rhs.<%= value %>;
+<% } %>
+		return <%= properties.map(value => `${value} * ${value}`).join(' + ') %>;
 	}
 
 	/** Returns the element-wise quotient of [Euclidean division] of `<%= type %>` by `rhs`. */
@@ -334,7 +345,8 @@ export class <%= type %> {
 	 * `rhs` must be of non-zero length.
 	 */
 	rejectFrom(rhs: <%= type %>): <%= type %> {
-		return this.sub(this.projectOnto(rhs));
+		const scale = this.dot(rhs) * (1 / rhs.dot(rhs));
+		return new <%= type %>(<%= properties.map(value => `this.${value} - rhs.${value} * scale`).join(', ') %>);
 	}
 
 	/** 
@@ -352,7 +364,8 @@ export class <%= type %> {
 	 * `rhs` must be normalized.
 	 */
 	rejectFromNormalized(rhs: <%= type %>): <%= type %> {
-		return this.sub(this.projectOntoNormalized(rhs));
+		const scale = this.dot(rhs);
+		return new <%= type %>(<%= properties.map(value => `this.${value} - rhs.${value} * scale`).join(', ') %>);
 	}
 
 	/** 
@@ -393,7 +406,7 @@ export class <%= type %> {
 	 * Note that this is fast but not precise for large numbers.
 	 */
 	fract(): <%= type %> {
-		return this.sub(this.floor());
+		return new <%= type %>(<%= properties.map(value => `this.${value} - Math.floor(this.${value})`).join(', ') %>);
 	}
 
 	/** Returns a vector containing `e^<%= type %>` (the exponential function) for each element of `<%= type %>`. */
@@ -418,7 +431,7 @@ export class <%= type %> {
 	 * extrapolated.
 	 */
 	lerp(rhs: <%= type %>, s: number): <%= type %> {
-		return this.add(rhs.sub(this).mul(s));
+		return new <%= type %>(<%= properties.map(value => `this.${value} + (rhs.${value} - this.${value}) * s`).join(', ') %>);
 	}
 
 	/** 
@@ -428,7 +441,7 @@ export class <%= type %> {
 	 * while being slightly cheaper to compute.
 	 */
 	midpoint(rhs: <%= type %>): <%= type %> {
-		return this.add(rhs).mul(0.5);
+		return new <%= type %>(<%= properties.map(value => `(this.${value} + rhs.${value}) * 0.5`).join(', ') %>);
 	}
 
 	/** 
@@ -441,19 +454,22 @@ export class <%= type %> {
 	 * [comparing floating point numbers](https:/**randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/).
 	*/
 	absDiffEq(rhs: <%= type %>, maxAbsDiff: number): boolean {
-		return this.sub(rhs).abs().cmple(<%= type %>.splat(maxAbsDiff)).all();
+		return <%= properties.map(value => `Math.abs(this.${value} - rhs.${value}) <= maxAbsDiff`).join(' && ') %>;
 	}
 
+<% const scaledBy = (k) => properties.map(value => `(this.${value} / length) * ${k}`).join(', '); %>
 	/** Returns a vector with a length no less than `min` and no more than `max`. */
 	clampLength(min: number, max: number): <%= type %> {
 		const lengthSq = this.lengthSquared();
 
 		if (lengthSq < min * min) {
-			return this.div(Math.sqrt(lengthSq)).mul(min);
+			const length = Math.sqrt(lengthSq);
+			return new <%= type %>(<%= scaledBy('min') %>);
 		}
 
 		if (lengthSq > max * max) {
-			return this.div(Math.sqrt(lengthSq)).mul(max);
+			const length = Math.sqrt(lengthSq);
+			return new <%= type %>(<%= scaledBy('max') %>);
 		}
 
 		return this;
@@ -464,7 +480,8 @@ export class <%= type %> {
 		const lengthSq = this.lengthSquared();
 
 		if (lengthSq > max * max) {
-			return this.div(Math.sqrt(lengthSq)).mul(max);
+			const length = Math.sqrt(lengthSq);
+			return new <%= type %>(<%= scaledBy('max') %>);
 		}
 
 		return this;
@@ -475,7 +492,8 @@ export class <%= type %> {
 		const lengthSq = this.lengthSquared();
 
 		if (lengthSq < min * min) {
-			return this.div(Math.sqrt(lengthSq)).mul(min);
+			const length = Math.sqrt(lengthSq);
+			return new <%= type %>(<%= scaledBy('min') %>);
 		}
 
 		return this;
@@ -486,7 +504,7 @@ export class <%= type %> {
 	 * error, yielding a more accurate result than an unfused multiply-add.
 	 */
 	mulAdd(a: <%= type %>, b: <%= type %>): <%= type %> {
-		return this.mul(a).add(b);
+		return new <%= type %>(<%= properties.map(value => `this.${value} * a.${value} + b.${value}`).join(', ') %>);
 	}
 
 <% if (type === "Vec2") { %>
@@ -497,8 +515,7 @@ export class <%= type %> {
 	 * and rotate [`Vector.Y`] around it returning `Vector.Y.neg()`.
 	 */
 	static fromAngle(angle: number): Vec2 {
-		const [cos, sin] = [Math.cos(angle), Math.sin(angle)];
-		return new Vec2(cos, sin);
+		return new Vec2(Math.cos(angle), Math.sin(angle));
 	}
 
 	/** 
@@ -601,11 +618,11 @@ export class <%= type %> {
 	 * (this.x / rhs.x, this.y / rhs.y) or (this.x / rhs, this.y / rhs).
 	 */
 	div(rhs: <%= type %> | number): <%= type %> {
-		if (rhs instanceof <%= type %>) {
-			return new <%= type %>(<%= properties.map(value => `this.${value} / rhs.${value}`).join(', ') %>);
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= properties.map(value => `this.${value} / rhs`).join(', ') %>);
 		}
 
-		return new <%= type %>(<%= properties.map(value => `this.${value} / rhs`).join(', ') %>);
+		return new <%= type %>(<%= properties.map(value => `this.${value} / rhs.${value}`).join(', ') %>);
 	}
 
 	/**
@@ -613,11 +630,11 @@ export class <%= type %> {
 	 * (this.x * rhs.x, this.y * rhs.y..) or (this.x * rhs, this.y * rhs..).
 	 */
 	mul(rhs: <%= type %> | number): <%= type %> {
-		if (rhs instanceof <%= type %>) {
-			return new <%= type %>(<%= properties.map(value => `this.${value} * rhs.${value}`).join(', ') %>);
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= properties.map(value => `this.${value} * rhs`).join(', ') %>);
 		}
 
-		return new <%= type %>(<%= properties.map(value => `this.${value} * rhs`).join(', ') %>);
+		return new <%= type %>(<%= properties.map(value => `this.${value} * rhs.${value}`).join(', ') %>);
 	}
 
 	/** 
@@ -625,11 +642,11 @@ export class <%= type %> {
 	 * (this.x + rhs.x, this.y + rhs.y..) or (this.x + rhs, this.y + rhs..)
 	 */
 	add(rhs: <%= type %> | number): <%= type %> {
-		if (rhs instanceof <%= type %>) {
-			return new <%= type %>(<%= properties.map(value => `this.${value} + rhs.${value}`).join(', ') %>);
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= properties.map(value => `this.${value} + rhs`).join(', ') %>);
 		}
 
-		return new <%= type %>(<%= properties.map(value => `this.${value} + rhs`).join(', ') %>);
+		return new <%= type %>(<%= properties.map(value => `this.${value} + rhs.${value}`).join(', ') %>);
 	}
 
 	/**
@@ -637,11 +654,11 @@ export class <%= type %> {
 	 * (this.x - rhs.x, this.y - rhs.y..) or (this.x - rhs, this.y - rhs..)
 	 */
 	sub(rhs: <%= type %> | number): <%= type %> {
-		if (rhs instanceof <%= type %>) {
-			return new <%= type %>(<%= properties.map(value => `this.${value} - rhs.${value}`).join(', ') %>);
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= properties.map(value => `this.${value} - rhs`).join(', ') %>);
 		}
 
-		return new <%= type %>(<%= properties.map(value => `this.${value} - rhs`).join(', ') %>);
+		return new <%= type %>(<%= properties.map(value => `this.${value} - rhs.${value}`).join(', ') %>);
 	}
 
 	/**
@@ -649,11 +666,11 @@ export class <%= type %> {
 	 * (this.x % rhs.x, this.y % rhs.y..) or (this.x % rhs, this.y % rhs..)
 	 */
 	rem(rhs: <%= type %> | number): <%= type %> {
-		if (rhs instanceof <%= type %>) {
-			return new <%= type %>(<%= properties.map(value => `this.${value} % rhs.${value}`).join(', ') %>);
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= properties.map(value => `this.${value} % rhs`).join(', ') %>);
 		}
 
-		return new <%= type %>(<%= properties.map(value => `this.${value} % rhs`).join(', ') %>);
+		return new <%= type %>(<%= properties.map(value => `this.${value} % rhs.${value}`).join(', ') %>);
 	}
 
 	/** Returns (-this.x, -this.y..) */
@@ -663,31 +680,31 @@ export class <%= type %> {
 
 	/** Compares if the vector is equal to another. */
 	eq(rhs: <%= type %> | number): boolean {
-		if (rhs instanceof <%= type %>) {
-			return <%= properties.map(value => `this.${value} === rhs.${value}`).join(' && ') %>;
+		if (typeof rhs === "number") {
+			return <%= properties.map(value => `this.${value} === rhs`).join(' && ') %>;
 		}
 
-		return <%= properties.map(value => `this.${value} === rhs`).join(' && ') %>;
+		return <%= properties.map(value => `this.${value} === rhs.${value}`).join(' && ') %>;
 	}
 
 	/** Compares if the vector is not equal to another. */
 	ne(rhs: <%= type %> | number): boolean {
-		if (rhs instanceof <%= type %>) {
-			return <%= properties.map(value => `this.${value} !== rhs.${value}`).join(' || ') %>;
+		if (typeof rhs === "number") {
+			return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
 		}
 
-		return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
+		return <%= properties.map(value => `this.${value} !== rhs.${value}`).join(' || ') %>;
 	}
 
 	/** Compares if the vector is approximately equal to another, by the threshold of 1e-6. */
 	approxEq(rhs: <%= type %> | number): boolean {
 		const threshold = 1e-6;
 
-		if (rhs instanceof <%= type %>) {
-			return <%= properties.map(value => `Math.abs(this.${value} - rhs.${value}) < threshold`).join(' && ') %>;
+		if (typeof rhs === "number") {
+			return <%= properties.map(value => `Math.abs(this.${value} - rhs) < threshold`).join(' && ') %>;
 		}
 
-		return <%= properties.map(value => `Math.abs(this.${value} - rhs) < threshold`).join(' && ') %>;
+		return <%= properties.map(value => `Math.abs(this.${value} - rhs.${value}) < threshold`).join(' && ') %>;
 	}
 
 	/** Prints out a formatted output of the instance. */

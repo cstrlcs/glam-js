@@ -5,6 +5,8 @@
 ## API Reference
 
 * `BVec` - A 2-dimensional boolean vector. 
+  * `x: boolean` - The `x` element. 
+  * `y: boolean` - The `y` element. 
   * `FALSE: BVec2` - All false. (false, false..) 
   * `TRUE: BVec2` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec2` - Creates a vector with all elements set to v. 
@@ -23,6 +25,9 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `BVec` - A 3-dimensional boolean vector. 
+  * `x: boolean` - The `x` element. 
+  * `y: boolean` - The `y` element. 
+  * `z: boolean` - The `z` element. 
   * `FALSE: BVec3` - All false. (false, false..) 
   * `TRUE: BVec3` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec3` - Creates a vector with all elements set to v. 
@@ -41,6 +46,10 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `BVec` - A 4-dimensional boolean vector. 
+  * `x: boolean` - The `x` element. 
+  * `y: boolean` - The `y` element. 
+  * `z: boolean` - The `z` element. 
+  * `w: boolean` - The `w` element. 
   * `FALSE: BVec4` - All false. (false, false..) 
   * `TRUE: BVec4` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec4` - Creates a vector with all elements set to v. 
@@ -59,6 +68,8 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `Vec` - A 2-dimensional vector. 
+  * `x: number` - The `x` element. 
+  * `y: number` - The `y` element. 
   * `ZERO: Vec2` - All zeroes. (0, 0..) 
   * `ONE: Vec2` - All ones. (1, 1..) 
   * `NEG_ONE: Vec2` - All negative ones. (-1, -1..) 
@@ -204,6 +215,9 @@ it will be like a rotation with a multiplication by `Vec2`'s length.
   * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `Vec` - A 3-dimensional vector. 
+  * `x: number` - The `x` element. 
+  * `y: number` - The `y` element. 
+  * `z: number` - The `z` element. 
   * `ZERO: Vec3` - All zeroes. (0, 0..) 
   * `ONE: Vec3` - All ones. (1, 1..) 
   * `NEG_ONE: Vec3` - All negative ones. (-1, -1..) 
@@ -347,6 +361,10 @@ basis. That is, all three vectors are orthogonal to each other and are normalize
   * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `Vec` - A 4-dimensional vector. 
+  * `x: number` - The `x` element. 
+  * `y: number` - The `y` element. 
+  * `z: number` - The `z` element. 
+  * `w: number` - The `w` element. 
   * `ZERO: Vec4` - All zeroes. (0, 0..) 
   * `ONE: Vec4` - All ones. (1, 1..) 
   * `NEG_ONE: Vec4` - All negative ones. (-1, -1..) 
@@ -484,28 +502,37 @@ The inputs do not need to be unit vectors however they must be non-zero.
   * `toString: () => string` - Prints out a formatted output of the instance. 
 
 * `Mat` - A 2x2 column major matrix. 
+  * `xAxis: Vec2` - Column 0 of the matrix (the `x` axis). 
+  * `yAxis: Vec2` - Column 1 of the matrix (the `y` axis). 
   * `new: (m00: number, m01: number, m10: number, m11: number) => Mat2` - Creates a new `Mat2` from multiple values. 
-  * `ZERO: any` - All zeroes. (0, 0..) 
+  * `ZERO: Mat2` - All zeroes. (0, 0..) 
   * `IDENTITY: Mat2` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
-  * `NAN: any` - All `NaN`. (NaN, NaN..) 
+  * `NAN: Mat2` - All `NaN`. (NaN, NaN..) 
   * `fromCols: (xAxis: Vec2, yAxis: Vec2) => Mat2` - Creates a 2x2 matrix from four column vectors. 
   * `fromColsArray: (m: number[]) => Mat2` - Creates a 2x2 matrix from four column vectors. 
   * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
 
 * `Mat` - A 3x3 column major matrix. 
+  * `xAxis: Vec3` - Column 0 of the matrix (the `x` axis). 
+  * `yAxis: Vec3` - Column 1 of the matrix (the `y` axis). 
+  * `zAxis: Vec3` - Column 2 of the matrix (the `z` axis). 
   * `new: (m00: number, m01: number, m02: number, m10: number, m11: number, m12: number, m20: number, m21: number, m22: number) => Mat3` - Creates a new `Mat3` from multiple values. 
-  * `ZERO: any` - All zeroes. (0, 0..) 
+  * `ZERO: Mat3` - All zeroes. (0, 0..) 
   * `IDENTITY: Mat3` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
-  * `NAN: any` - All `NaN`. (NaN, NaN..) 
+  * `NAN: Mat3` - All `NaN`. (NaN, NaN..) 
   * `fromCols: (xAxis: Vec3, yAxis: Vec3, zAxis: Vec3) => Mat3` - Creates a 3x3 matrix from four column vectors. 
   * `fromColsArray: (m: number[]) => Mat3` - Creates a 3x3 matrix from four column vectors. 
   * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
 
 * `Mat` - A 4x4 column major matrix. 
+  * `xAxis: Vec4` - Column 0 of the matrix (the `x` axis). 
+  * `yAxis: Vec4` - Column 1 of the matrix (the `y` axis). 
+  * `zAxis: Vec4` - Column 2 of the matrix (the `z` axis). 
+  * `wAxis: Vec4` - Column 3 of the matrix (the `w` axis). 
   * `new: (m00: number, m01: number, m02: number, m03: number, m10: number, m11: number, m12: number, m13: number, m20: number, m21: number, m22: number, m23: number, m30: number, m31: number, m32: number, m33: number) => Mat4` - Creates a new `Mat4` from multiple values. 
-  * `ZERO: any` - All zeroes. (0, 0..) 
+  * `ZERO: Mat4` - All zeroes. (0, 0..) 
   * `IDENTITY: Mat4` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
-  * `NAN: any` - All `NaN`. (NaN, NaN..) 
+  * `NAN: Mat4` - All `NaN`. (NaN, NaN..) 
   * `fromCols: (xAxis: Vec4, yAxis: Vec4, zAxis: Vec4, wAxis: Vec4) => Mat4` - Creates a 4x4 matrix from four column vectors. 
   * `fromColsArray: (m: number[]) => Mat4` - Creates a 4x4 matrix from four column vectors. 
   * `toColsArray: () => number[]` - Creates an array storing data in column major order. 

@@ -3,10 +3,17 @@
 import { Vec2 } from "./";
 
 export class Mat2 {
-	constructor(
-		public xAxis: Vec2,
-		public yAxis: Vec2,
-	) {}
+	// Fields are `declare`d instead of parameter properties so no class fields
+	// are emitted (see the note in `Vec2`).
+	/** Column 0 of the matrix (the `x` axis). */
+	declare xAxis: Vec2;
+	/** Column 1 of the matrix (the `y` axis). */
+	declare yAxis: Vec2;
+
+	constructor(xAxis: Vec2, yAxis: Vec2) {
+		this.xAxis = xAxis;
+		this.yAxis = yAxis;
+	}
 
 	/**
 	 * Creates a new `Mat2` from multiple values.
@@ -17,17 +24,20 @@ export class Mat2 {
 
 	/** All zeroes. (0, 0..) */
 	static get ZERO() {
-		return Mat2.fromCols(Vec2.ZERO, Vec2.ZERO);
+		return new Mat2(new Vec2(0, 0), new Vec2(0, 0));
 	}
 
 	/** All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. */
 	static get IDENTITY() {
-		return Mat2.fromCols(Vec2.X, Vec2.Y);
+		return new Mat2(new Vec2(1, 0), new Vec2(0, 1));
 	}
 
 	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
-		return Mat2.fromCols(Vec2.NAN, Vec2.NAN);
+		return new Mat2(
+			new Vec2(Number.NaN, Number.NaN),
+			new Vec2(Number.NaN, Number.NaN),
+		);
 	}
 
 	/**

@@ -3,51 +3,83 @@
 import { BVec4 } from "./";
 
 export class Vec4 {
-	constructor(
-		public x: number,
-		public y: number,
-		public z: number,
-		public w: number,
-	) {}
+	// Fields are `declare`d and assigned in the constructor instead of using
+	// parameter properties: those emit class fields, which start as `undefined`
+	// and make V8 allocate a new heap number on every write to `x`, `y`..
+	/** The `x` element. */
+	declare x: number;
+	/** The `y` element. */
+	declare y: number;
+	/** The `z` element. */
+	declare z: number;
+	/** The `w` element. */
+	declare w: number;
+
+	constructor(x: number, y: number, z: number, w: number) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+	}
 
 	/** All zeroes. (0, 0..) */
 	static get ZERO() {
-		return Vec4.splat(0);
+		return new Vec4(0, 0, 0, 0);
 	}
 
 	/** All ones. (1, 1..) */
 	static get ONE() {
-		return Vec4.splat(1);
+		return new Vec4(1, 1, 1, 1);
 	}
 
 	/** All negative ones. (-1, -1..) */
 	static get NEG_ONE() {
-		return Vec4.splat(-1);
+		return new Vec4(-1, -1, -1, -1);
 	}
 
 	/** All `Number.MIN_VALUE`. (5e-324, 5e-324..) */
 	static get MIN() {
-		return Vec4.splat(Number.MIN_VALUE);
+		return new Vec4(
+			Number.MIN_VALUE,
+			Number.MIN_VALUE,
+			Number.MIN_VALUE,
+			Number.MIN_VALUE,
+		);
 	}
 
 	/** All `Number.MAX_VALUE`. (1.7976931348623157e+308, 1.7976931348623157e+308..) */
 	static get MAX() {
-		return Vec4.splat(Number.MAX_VALUE);
+		return new Vec4(
+			Number.MAX_VALUE,
+			Number.MAX_VALUE,
+			Number.MAX_VALUE,
+			Number.MAX_VALUE,
+		);
 	}
 
 	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
-		return Vec4.splat(Number.NaN);
+		return new Vec4(Number.NaN, Number.NaN, Number.NaN, Number.NaN);
 	}
 
 	/** All `Number.POSITIVE_INFINITY`. (Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY..) */
 	static get INFINITY() {
-		return Vec4.splat(Number.POSITIVE_INFINITY);
+		return new Vec4(
+			Number.POSITIVE_INFINITY,
+			Number.POSITIVE_INFINITY,
+			Number.POSITIVE_INFINITY,
+			Number.POSITIVE_INFINITY,
+		);
 	}
 
 	/** All `Number.NEGATIVE_INFINITY`. (Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY..) */
 	static get NEG_INFINITY() {
-		return Vec4.splat(Number.NEGATIVE_INFINITY);
+		return new Vec4(
+			Number.NEGATIVE_INFINITY,
+			Number.NEGATIVE_INFINITY,
+			Number.NEGATIVE_INFINITY,
+			Number.NEGATIVE_INFINITY,
+		);
 	}
 
 	/** A unit vector pointing along the positive X axis. (1, 0, 0, 0) */
@@ -92,7 +124,12 @@ export class Vec4 {
 
 	/** The unit axes. [Vec4.X, Vec4.Y, Vec4.Z, Vec4.W] */
 	static get AXES() {
-		return [Vec4.X, Vec4.Y, Vec4.Z, Vec4.W];
+		return [
+			new Vec4(1, 0, 0, 0),
+			new Vec4(0, 1, 0, 0),
+			new Vec4(0, 0, 1, 0),
+			new Vec4(0, 0, 0, 1),
+		];
 	}
 
 	/** Creates a vector with all elements set to v. (v, v, v, v) */
@@ -106,10 +143,10 @@ export class Vec4 {
 	 */
 	static select(mask: BVec4, ifTrue: Vec4, ifFalse: Vec4): Vec4 {
 		return new Vec4(
-			mask.test(0) ? ifTrue.x : ifFalse.x,
-			mask.test(1) ? ifTrue.y : ifFalse.y,
-			mask.test(2) ? ifTrue.z : ifFalse.z,
-			mask.test(3) ? ifTrue.w : ifFalse.w,
+			mask.x ? ifTrue.x : ifFalse.x,
+			mask.y ? ifTrue.y : ifFalse.y,
+			mask.z ? ifTrue.z : ifFalse.z,
+			mask.w ? ifTrue.w : ifFalse.w,
 		);
 	}
 
@@ -161,7 +198,12 @@ export class Vec4 {
 
 	/** Component-wise clamping of values. */
 	clamp(min: Vec4, max: Vec4): Vec4 {
-		return this.max(min).min(max);
+		return new Vec4(
+			Math.min(Math.max(this.x, min.x), max.x),
+			Math.min(Math.max(this.y, min.y), max.y),
+			Math.min(Math.max(this.z, min.z), max.z),
+			Math.min(Math.max(this.w, min.w), max.w),
+		);
 	}
 
 	/**
@@ -289,10 +331,10 @@ export class Vec4 {
 	 */
 	isNegativeBitmask(): number {
 		return (
-			Number(this.x < 0) |
-			(Number(this.y < 0) << 1) |
-			(Number(this.z < 0) << 2) |
-			(Number(this.w < 0) << 3)
+			(this.x < 0 ? 1 : 0) |
+			(this.y < 0 ? 2 : 0) |
+			(this.z < 0 ? 4 : 0) |
+			(this.w < 0 ? 8 : 0)
 		);
 	}
 
@@ -351,12 +393,16 @@ export class Vec4 {
 
 	/** Computes the Euclidean distance between two points in space. */
 	distance(rhs: Vec4): number {
-		return this.sub(rhs).length();
+		return Math.sqrt(this.distanceSquared(rhs));
 	}
 
 	/** Compute the squared euclidean distance between two points in space. */
 	distanceSquared(rhs: Vec4): number {
-		return this.sub(rhs).lengthSquared();
+		const x = this.x - rhs.x;
+		const y = this.y - rhs.y;
+		const z = this.z - rhs.z;
+		const w = this.w - rhs.w;
+		return x * x + y * y + z * z + w * w;
 	}
 
 	/** Returns the element-wise quotient of [Euclidean division] of `Vec4` by `rhs`. */
@@ -426,7 +472,13 @@ export class Vec4 {
 	 * `rhs` must be of non-zero length.
 	 */
 	rejectFrom(rhs: Vec4): Vec4 {
-		return this.sub(this.projectOnto(rhs));
+		const scale = this.dot(rhs) * (1 / rhs.dot(rhs));
+		return new Vec4(
+			this.x - rhs.x * scale,
+			this.y - rhs.y * scale,
+			this.z - rhs.z * scale,
+			this.w - rhs.w * scale,
+		);
 	}
 
 	/**
@@ -444,7 +496,13 @@ export class Vec4 {
 	 * `rhs` must be normalized.
 	 */
 	rejectFromNormalized(rhs: Vec4): Vec4 {
-		return this.sub(this.projectOntoNormalized(rhs));
+		const scale = this.dot(rhs);
+		return new Vec4(
+			this.x - rhs.x * scale,
+			this.y - rhs.y * scale,
+			this.z - rhs.z * scale,
+			this.w - rhs.w * scale,
+		);
 	}
 
 	/**
@@ -505,7 +563,12 @@ export class Vec4 {
 	 * Note that this is fast but not precise for large numbers.
 	 */
 	fract(): Vec4 {
-		return this.sub(this.floor());
+		return new Vec4(
+			this.x - Math.floor(this.x),
+			this.y - Math.floor(this.y),
+			this.z - Math.floor(this.z),
+			this.w - Math.floor(this.w),
+		);
 	}
 
 	/** Returns a vector containing `e^Vec4` (the exponential function) for each element of `Vec4`. */
@@ -535,7 +598,12 @@ export class Vec4 {
 	 * extrapolated.
 	 */
 	lerp(rhs: Vec4, s: number): Vec4 {
-		return this.add(rhs.sub(this).mul(s));
+		return new Vec4(
+			this.x + (rhs.x - this.x) * s,
+			this.y + (rhs.y - this.y) * s,
+			this.z + (rhs.z - this.z) * s,
+			this.w + (rhs.w - this.w) * s,
+		);
 	}
 
 	/**
@@ -545,7 +613,12 @@ export class Vec4 {
 	 * while being slightly cheaper to compute.
 	 */
 	midpoint(rhs: Vec4): Vec4 {
-		return this.add(rhs).mul(0.5);
+		return new Vec4(
+			(this.x + rhs.x) * 0.5,
+			(this.y + rhs.y) * 0.5,
+			(this.z + rhs.z) * 0.5,
+			(this.w + rhs.w) * 0.5,
+		);
 	}
 
 	/**
@@ -558,7 +631,12 @@ export class Vec4 {
 	 * [comparing floating point numbers](https:/**randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/).
 	 */
 	absDiffEq(rhs: Vec4, maxAbsDiff: number): boolean {
-		return this.sub(rhs).abs().cmple(Vec4.splat(maxAbsDiff)).all();
+		return (
+			Math.abs(this.x - rhs.x) <= maxAbsDiff &&
+			Math.abs(this.y - rhs.y) <= maxAbsDiff &&
+			Math.abs(this.z - rhs.z) <= maxAbsDiff &&
+			Math.abs(this.w - rhs.w) <= maxAbsDiff
+		);
 	}
 
 	/** Returns a vector with a length no less than `min` and no more than `max`. */
@@ -566,11 +644,23 @@ export class Vec4 {
 		const lengthSq = this.lengthSquared();
 
 		if (lengthSq < min * min) {
-			return this.div(Math.sqrt(lengthSq)).mul(min);
+			const length = Math.sqrt(lengthSq);
+			return new Vec4(
+				(this.x / length) * min,
+				(this.y / length) * min,
+				(this.z / length) * min,
+				(this.w / length) * min,
+			);
 		}
 
 		if (lengthSq > max * max) {
-			return this.div(Math.sqrt(lengthSq)).mul(max);
+			const length = Math.sqrt(lengthSq);
+			return new Vec4(
+				(this.x / length) * max,
+				(this.y / length) * max,
+				(this.z / length) * max,
+				(this.w / length) * max,
+			);
 		}
 
 		return this;
@@ -581,7 +671,13 @@ export class Vec4 {
 		const lengthSq = this.lengthSquared();
 
 		if (lengthSq > max * max) {
-			return this.div(Math.sqrt(lengthSq)).mul(max);
+			const length = Math.sqrt(lengthSq);
+			return new Vec4(
+				(this.x / length) * max,
+				(this.y / length) * max,
+				(this.z / length) * max,
+				(this.w / length) * max,
+			);
 		}
 
 		return this;
@@ -592,7 +688,13 @@ export class Vec4 {
 		const lengthSq = this.lengthSquared();
 
 		if (lengthSq < min * min) {
-			return this.div(Math.sqrt(lengthSq)).mul(min);
+			const length = Math.sqrt(lengthSq);
+			return new Vec4(
+				(this.x / length) * min,
+				(this.y / length) * min,
+				(this.z / length) * min,
+				(this.w / length) * min,
+			);
 		}
 
 		return this;
@@ -603,7 +705,12 @@ export class Vec4 {
 	 * error, yielding a more accurate result than an unfused multiply-add.
 	 */
 	mulAdd(a: Vec4, b: Vec4): Vec4 {
-		return this.mul(a).add(b);
+		return new Vec4(
+			this.x * a.x + b.x,
+			this.y * a.y + b.y,
+			this.z * a.z + b.z,
+			this.w * a.w + b.w,
+		);
 	}
 
 	/**
@@ -623,16 +730,16 @@ export class Vec4 {
 	 * (this.x / rhs.x, this.y / rhs.y) or (this.x / rhs, this.y / rhs).
 	 */
 	div(rhs: Vec4 | number): Vec4 {
-		if (rhs instanceof Vec4) {
-			return new Vec4(
-				this.x / rhs.x,
-				this.y / rhs.y,
-				this.z / rhs.z,
-				this.w / rhs.w,
-			);
+		if (typeof rhs === "number") {
+			return new Vec4(this.x / rhs, this.y / rhs, this.z / rhs, this.w / rhs);
 		}
 
-		return new Vec4(this.x / rhs, this.y / rhs, this.z / rhs, this.w / rhs);
+		return new Vec4(
+			this.x / rhs.x,
+			this.y / rhs.y,
+			this.z / rhs.z,
+			this.w / rhs.w,
+		);
 	}
 
 	/**
@@ -640,16 +747,16 @@ export class Vec4 {
 	 * (this.x * rhs.x, this.y * rhs.y..) or (this.x * rhs, this.y * rhs..).
 	 */
 	mul(rhs: Vec4 | number): Vec4 {
-		if (rhs instanceof Vec4) {
-			return new Vec4(
-				this.x * rhs.x,
-				this.y * rhs.y,
-				this.z * rhs.z,
-				this.w * rhs.w,
-			);
+		if (typeof rhs === "number") {
+			return new Vec4(this.x * rhs, this.y * rhs, this.z * rhs, this.w * rhs);
 		}
 
-		return new Vec4(this.x * rhs, this.y * rhs, this.z * rhs, this.w * rhs);
+		return new Vec4(
+			this.x * rhs.x,
+			this.y * rhs.y,
+			this.z * rhs.z,
+			this.w * rhs.w,
+		);
 	}
 
 	/**
@@ -657,16 +764,16 @@ export class Vec4 {
 	 * (this.x + rhs.x, this.y + rhs.y..) or (this.x + rhs, this.y + rhs..)
 	 */
 	add(rhs: Vec4 | number): Vec4 {
-		if (rhs instanceof Vec4) {
-			return new Vec4(
-				this.x + rhs.x,
-				this.y + rhs.y,
-				this.z + rhs.z,
-				this.w + rhs.w,
-			);
+		if (typeof rhs === "number") {
+			return new Vec4(this.x + rhs, this.y + rhs, this.z + rhs, this.w + rhs);
 		}
 
-		return new Vec4(this.x + rhs, this.y + rhs, this.z + rhs, this.w + rhs);
+		return new Vec4(
+			this.x + rhs.x,
+			this.y + rhs.y,
+			this.z + rhs.z,
+			this.w + rhs.w,
+		);
 	}
 
 	/**
@@ -674,16 +781,16 @@ export class Vec4 {
 	 * (this.x - rhs.x, this.y - rhs.y..) or (this.x - rhs, this.y - rhs..)
 	 */
 	sub(rhs: Vec4 | number): Vec4 {
-		if (rhs instanceof Vec4) {
-			return new Vec4(
-				this.x - rhs.x,
-				this.y - rhs.y,
-				this.z - rhs.z,
-				this.w - rhs.w,
-			);
+		if (typeof rhs === "number") {
+			return new Vec4(this.x - rhs, this.y - rhs, this.z - rhs, this.w - rhs);
 		}
 
-		return new Vec4(this.x - rhs, this.y - rhs, this.z - rhs, this.w - rhs);
+		return new Vec4(
+			this.x - rhs.x,
+			this.y - rhs.y,
+			this.z - rhs.z,
+			this.w - rhs.w,
+		);
 	}
 
 	/**
@@ -691,16 +798,16 @@ export class Vec4 {
 	 * (this.x % rhs.x, this.y % rhs.y..) or (this.x % rhs, this.y % rhs..)
 	 */
 	rem(rhs: Vec4 | number): Vec4 {
-		if (rhs instanceof Vec4) {
-			return new Vec4(
-				this.x % rhs.x,
-				this.y % rhs.y,
-				this.z % rhs.z,
-				this.w % rhs.w,
-			);
+		if (typeof rhs === "number") {
+			return new Vec4(this.x % rhs, this.y % rhs, this.z % rhs, this.w % rhs);
 		}
 
-		return new Vec4(this.x % rhs, this.y % rhs, this.z % rhs, this.w % rhs);
+		return new Vec4(
+			this.x % rhs.x,
+			this.y % rhs.y,
+			this.z % rhs.z,
+			this.w % rhs.w,
+		);
 	}
 
 	/** Returns (-this.x, -this.y..) */
@@ -710,50 +817,54 @@ export class Vec4 {
 
 	/** Compares if the vector is equal to another. */
 	eq(rhs: Vec4 | number): boolean {
-		if (rhs instanceof Vec4) {
+		if (typeof rhs === "number") {
 			return (
-				this.x === rhs.x &&
-				this.y === rhs.y &&
-				this.z === rhs.z &&
-				this.w === rhs.w
+				this.x === rhs && this.y === rhs && this.z === rhs && this.w === rhs
 			);
 		}
 
-		return this.x === rhs && this.y === rhs && this.z === rhs && this.w === rhs;
+		return (
+			this.x === rhs.x &&
+			this.y === rhs.y &&
+			this.z === rhs.z &&
+			this.w === rhs.w
+		);
 	}
 
 	/** Compares if the vector is not equal to another. */
 	ne(rhs: Vec4 | number): boolean {
-		if (rhs instanceof Vec4) {
+		if (typeof rhs === "number") {
 			return (
-				this.x !== rhs.x ||
-				this.y !== rhs.y ||
-				this.z !== rhs.z ||
-				this.w !== rhs.w
+				this.x !== rhs || this.y !== rhs || this.z !== rhs || this.w !== rhs
 			);
 		}
 
-		return this.x !== rhs || this.y !== rhs || this.z !== rhs || this.w !== rhs;
+		return (
+			this.x !== rhs.x ||
+			this.y !== rhs.y ||
+			this.z !== rhs.z ||
+			this.w !== rhs.w
+		);
 	}
 
 	/** Compares if the vector is approximately equal to another, by the threshold of 1e-6. */
 	approxEq(rhs: Vec4 | number): boolean {
 		const threshold = 1e-6;
 
-		if (rhs instanceof Vec4) {
+		if (typeof rhs === "number") {
 			return (
-				Math.abs(this.x - rhs.x) < threshold &&
-				Math.abs(this.y - rhs.y) < threshold &&
-				Math.abs(this.z - rhs.z) < threshold &&
-				Math.abs(this.w - rhs.w) < threshold
+				Math.abs(this.x - rhs) < threshold &&
+				Math.abs(this.y - rhs) < threshold &&
+				Math.abs(this.z - rhs) < threshold &&
+				Math.abs(this.w - rhs) < threshold
 			);
 		}
 
 		return (
-			Math.abs(this.x - rhs) < threshold &&
-			Math.abs(this.y - rhs) < threshold &&
-			Math.abs(this.z - rhs) < threshold &&
-			Math.abs(this.w - rhs) < threshold
+			Math.abs(this.x - rhs.x) < threshold &&
+			Math.abs(this.y - rhs.y) < threshold &&
+			Math.abs(this.z - rhs.z) < threshold &&
+			Math.abs(this.w - rhs.w) < threshold
 		);
 	}
 

@@ -3,12 +3,23 @@
 import { Vec4 } from "./";
 
 export class Mat4 {
-	constructor(
-		public xAxis: Vec4,
-		public yAxis: Vec4,
-		public zAxis: Vec4,
-		public wAxis: Vec4,
-	) {}
+	// Fields are `declare`d instead of parameter properties so no class fields
+	// are emitted (see the note in `Vec2`).
+	/** Column 0 of the matrix (the `x` axis). */
+	declare xAxis: Vec4;
+	/** Column 1 of the matrix (the `y` axis). */
+	declare yAxis: Vec4;
+	/** Column 2 of the matrix (the `z` axis). */
+	declare zAxis: Vec4;
+	/** Column 3 of the matrix (the `w` axis). */
+	declare wAxis: Vec4;
+
+	constructor(xAxis: Vec4, yAxis: Vec4, zAxis: Vec4, wAxis: Vec4) {
+		this.xAxis = xAxis;
+		this.yAxis = yAxis;
+		this.zAxis = zAxis;
+		this.wAxis = wAxis;
+	}
 
 	/**
 	 * Creates a new `Mat4` from multiple values.
@@ -41,17 +52,32 @@ export class Mat4 {
 
 	/** All zeroes. (0, 0..) */
 	static get ZERO() {
-		return Mat4.fromCols(Vec4.ZERO, Vec4.ZERO, Vec4.ZERO, Vec4.ZERO);
+		return new Mat4(
+			new Vec4(0, 0, 0, 0),
+			new Vec4(0, 0, 0, 0),
+			new Vec4(0, 0, 0, 0),
+			new Vec4(0, 0, 0, 0),
+		);
 	}
 
 	/** All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. */
 	static get IDENTITY() {
-		return Mat4.fromCols(Vec4.X, Vec4.Y, Vec4.Z, Vec4.W);
+		return new Mat4(
+			new Vec4(1, 0, 0, 0),
+			new Vec4(0, 1, 0, 0),
+			new Vec4(0, 0, 1, 0),
+			new Vec4(0, 0, 0, 1),
+		);
 	}
 
 	/** All `NaN`. (NaN, NaN..) */
 	static get NAN() {
-		return Mat4.fromCols(Vec4.NAN, Vec4.NAN, Vec4.NAN, Vec4.NAN);
+		return new Mat4(
+			new Vec4(Number.NaN, Number.NaN, Number.NaN, Number.NaN),
+			new Vec4(Number.NaN, Number.NaN, Number.NaN, Number.NaN),
+			new Vec4(Number.NaN, Number.NaN, Number.NaN, Number.NaN),
+			new Vec4(Number.NaN, Number.NaN, Number.NaN, Number.NaN),
+		);
 	}
 
 	/**
