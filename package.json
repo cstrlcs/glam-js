@@ -6,14 +6,23 @@
 		"type": "git",
 		"url": "git+https://github.com/cstrlcs/glam-js.git"
 	},
+	"type": "module",
 	"main": "dist/index.js",
+	"module": "dist/index.js",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"devDependencies": {
 		"@biomejs/biome": "latest",
 		"@cstrlcs/configs": "latest",
 		"bun-types": "latest",
 		"lefthook": "latest",
 		"mitata": "^1.0.34",
-		"tinyplate.js": "latest"
+		"tinyplate.js": "latest",
+		"typescript": "^5.4.2"
 	},
 	"bugs": "https://github.com/cstrlcs/glam-js/issues",
 	"description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
@@ -37,7 +46,8 @@
 		"build:js": "bun build ./src/index.ts --outdir ./dist --minify",
 		"build:declaration": "tsc --declaration --emitDeclarationOnly --outDir ./dist ./src/index.ts",
 		"release": "bun codegen && bun build:js && bun build:declaration",
-		"postinstall": "lefthook install"
+		"typecheck": "tsc --noEmit -p .",
+		"prepare": "lefthook install"
 	},
 	"types": "dist/index.d.ts"
 }

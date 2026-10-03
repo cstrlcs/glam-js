@@ -15,7 +15,13 @@ jobs:
       - name: bun install
         run: bun install
 
+      - name: Typecheck
+        run: bun typecheck
+
       - name: Build
         run: bun release
 
       - run: bun test
+
+      - name: Smoke test the built package
+        run: node --input-type=module -e "import { Vec3 } from './dist/index.js'; if (String(new Vec3(1, 2, 3).addAssign(1)) !== 'Vec3(2, 3, 4)') process.exit(1);"
