@@ -31,7 +31,7 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `FALSE: BVec3` - All false. (false, false..) 
   * `TRUE: BVec3` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec3` - Creates a vector with all elements set to v. 
-  * `bitmask: () => number` - Returns a bitmask with the lowest 2 bits set from the elements of BVec3.
+  * `bitmask: () => number` - Returns a bitmask with the lowest 3 bits set from the elements of BVec3.
 A true element results in a 1 bit and a false element in a 0 bit. Element x goes into the first lowest bit, element y into the second, etc. 
   * `any: () => boolean` - Returns true if any of the elements are true, false otherwise. 
   * `all: () => boolean` - Returns true if all the elements are true, false otherwise. 
@@ -53,7 +53,7 @@ A true element results in a 1 bit and a false element in a 0 bit. Element x goes
   * `FALSE: BVec4` - All false. (false, false..) 
   * `TRUE: BVec4` - All true. (true, true..) 
   * `splat: (v: boolean) => BVec4` - Creates a vector with all elements set to v. 
-  * `bitmask: () => number` - Returns a bitmask with the lowest 2 bits set from the elements of BVec4.
+  * `bitmask: () => number` - Returns a bitmask with the lowest 4 bits set from the elements of BVec4.
 A true element results in a 1 bit and a false element in a 0 bit. Element x goes into the first lowest bit, element y into the second, etc. 
   * `any: () => boolean` - Returns true if any of the elements are true, false otherwise. 
   * `all: () => boolean` - Returns true if all the elements are true, false otherwise. 
@@ -90,7 +90,7 @@ A true element in the mask uses the corresponding element from `ifTrue`, and fal
   * `clone: () => Vec2` - Returns a new vector with the same elements, so it can be mutated independently. 
   * `toArray: () => [number, number]` - [x, y] 
   * `dot: (rhs: Vec2) => number` - Computes the dot product of `Vec2` and `rhs`. 
-  * `dotIntoVec: (rhs: Vec2) => Vec2` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
+  * `dotIntoVec: (rhs: Vec2) => Vec2` - Returns a vector where every component is the dot product of `Vec2` and `rhs`. 
   * `min: (rhs: Vec2) => Vec2` - Returns a vector containing the minimum values for each element of `Vec2` and `rhs`.
 In other words this computes `Math.min(this.x, rhs.x), Math.min(this.y, rhs.y)..`. 
   * `max: (rhs: Vec2) => Vec2` - Returns a vector containing the maximum values for each element of `Vec2` and `rhs`.
@@ -112,7 +112,7 @@ In other words this computes `[this.x > rhs.x, this.y > rhs.y..]` for all elemen
 In other words this computes `[this.x <= rhs.x, this.y <= rhs.y..]` for all elements. 
   * `cmplt: (rhs: Vec2) => BVec2` - Returns a vector mask containing the result of a `<` comparison for each element of `Vec2` and `rhs`.
 In other words this computes `[this.x < rhs.x, this.y < rhs.y..]` for all elements. 
-  * `abs: () => Vec2` - Returns a vector containing the absolute value of each element of `Vec3`. 
+  * `abs: () => Vec2` - Returns a vector containing the absolute value of each element of `Vec2`. 
   * `signum: () => Vec2` - Returns a vector with elements representing the sign of `Vec2`.
 - `1` if the number is positive, `+0` or `INFINITY`
 - `-1` if the number is negative, `-0` or `NEG_INFINITY` 
@@ -143,13 +143,13 @@ Uses a precision threshold of `1e-4`.
 `rhs` must be of non-zero length. 
   * `rejectFrom: (rhs: Vec2) => Vec2` - Returns the vector rejection of `Vec2` from `rhs`.
 The vector rejection is the vector perpendicular to the projection of `Vec2` onto
-`rhs`, in rhs words the result of `Vec2 - this.project_onto(rhs)`.
+`rhs`, in other words the result of `this.sub(this.projectOnto(rhs))`.
 `rhs` must be of non-zero length. 
   * `projectOntoNormalized: (rhs: Vec2) => Vec2` - Returns the vector projection of `Vec2` onto `rhs`.
 `rhs` must be normalized. 
   * `rejectFromNormalized: (rhs: Vec2) => Vec2` - Returns the vector rejection of `Vec2` from `rhs`.
 The vector rejection is the vector perpendicular to the projection of `Vec2` onto
-`rhs`, in rhs words the result of `Vec2.sub(this.projectOnto(rhs))`.
+`rhs`, in other words the result of `this.sub(this.projectOntoNormalized(rhs))`.
 `rhs` must be normalized. 
   * `round: () => Vec2` - Returns a vector containing the nearest integer to a number for each element of `Vec2`.
 Round half-way cases away from 0. 
@@ -179,16 +179,20 @@ This can be used to compare if two vectors contain similar elements. It works be
 comparing with a known value. The `maxAbsDiff` that should be used used depends on
 the values being compared against.
 For more see
-[comparing floating point numbers](https:/**randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/). 
-  * `clampLength: (min: number, max: number) => Vec2` - Returns a vector with a length no less than `min` and no more than `max`. 
-  * `clampLengthMax: (max: number) => Vec2` - Returns a vector with a length no more than `max`. 
-  * `clampLengthMin: (min: number) => Vec2` - Returns a vector with a length no less than `min`. 
-  * `mulAdd: (a: Vec2, b: Vec2) => Vec2` - Fused multiply-add. Computes `(Vec2 * a) + b` element-wise with only one rounding
-error, yielding a more accurate result than an unfused multiply-add. 
+[comparing floating point numbers](https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/). 
+  * `clampLength: (min: number, max: number) => Vec2` - Returns a vector with a length no less than `min` and no more than `max`.
+Always returns a new vector, even when no clamping is needed. 
+  * `clampLengthMax: (max: number) => Vec2` - Returns a vector with a length no more than `max`.
+Always returns a new vector, even when no clamping is needed. 
+  * `clampLengthMin: (min: number) => Vec2` - Returns a vector with a length no less than `min`.
+Always returns a new vector, even when no clamping is needed. 
+  * `mulAdd: (a: Vec2, b: Vec2) => Vec2` - Computes `(Vec2 * a) + b` element-wise, allocating a single vector.
+Unlike glam-rs this is not a fused multiply-add: JavaScript has no FMA, so the result is
+rounded twice, exactly like `this.mul(a).add(b)`. 
   * `fromAngle: (angle: number) => Vec2` - Creates a 2D vector containing `[Math.cos(angle), Math.sin(angle)]`. This can be used in
-conjunction with the [`rotate()`][Vec2.rotate()] method, e.g.
-`Vec2.fromAngle(PI).rotate(Vector.Y)` will create the vector `[-1, 0]`
-and rotate [`Vector.Y`] around it returning `Vector.Y.neg()`. 
+conjunction with the `rotate()` method, e.g.
+`Vec2.fromAngle(Math.PI).rotate(Vec2.Y)` will create the vector `[-1, 0]`
+and rotate `Vec2.Y` around it returning `Vec2.Y.neg()`. 
   * `toAngle: () => number` - Returns the angle (in radians) of this vector in the range `[-π, +π]`.
 The input does not need to be a unit vector however it must be non-zero. 
   * `angleBetween: (rhs: Vec2) => number` - Returns the angle (in radians) between `Vec2` and `rhs` in the range `[-π, +π]`.
@@ -283,7 +287,7 @@ In other words this computes `[this.x < rhs.x, this.y < rhs.y..]` for all elemen
   * `signum: () => Vec3` - Returns a vector with elements representing the sign of `Vec3`.
 - `1` if the number is positive, `+0` or `INFINITY`
 - `-1` if the number is negative, `-0` or `NEG_INFINITY` 
-  * `isNegativeBitmask: () => number` - Returns a bitmask with the lowest 2 bits set to the sign bits from the elements of `Vec3`.
+  * `isNegativeBitmask: () => number` - Returns a bitmask with the lowest 3 bits set to the sign bits from the elements of `Vec3`.
 A negative element results in a `1` bit and a positive element in a `0` bit.  Element `x` goes
 into the first lowest bit, element `y` into the second, etc. 
   * `isFinite: () => boolean` - Returns `true` if, and only if, all elements are finite. If any element is either `NaN`, positive or negative infinity, this will return `false`. 
@@ -310,13 +314,13 @@ Uses a precision threshold of `1e-4`.
 `rhs` must be of non-zero length. 
   * `rejectFrom: (rhs: Vec3) => Vec3` - Returns the vector rejection of `Vec3` from `rhs`.
 The vector rejection is the vector perpendicular to the projection of `Vec3` onto
-`rhs`, in rhs words the result of `Vec3 - this.project_onto(rhs)`.
+`rhs`, in other words the result of `this.sub(this.projectOnto(rhs))`.
 `rhs` must be of non-zero length. 
   * `projectOntoNormalized: (rhs: Vec3) => Vec3` - Returns the vector projection of `Vec3` onto `rhs`.
 `rhs` must be normalized. 
   * `rejectFromNormalized: (rhs: Vec3) => Vec3` - Returns the vector rejection of `Vec3` from `rhs`.
 The vector rejection is the vector perpendicular to the projection of `Vec3` onto
-`rhs`, in rhs words the result of `Vec3.sub(this.projectOnto(rhs))`.
+`rhs`, in other words the result of `this.sub(this.projectOntoNormalized(rhs))`.
 `rhs` must be normalized. 
   * `round: () => Vec3` - Returns a vector containing the nearest integer to a number for each element of `Vec3`.
 Round half-way cases away from 0. 
@@ -346,20 +350,24 @@ This can be used to compare if two vectors contain similar elements. It works be
 comparing with a known value. The `maxAbsDiff` that should be used used depends on
 the values being compared against.
 For more see
-[comparing floating point numbers](https:/**randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/). 
-  * `clampLength: (min: number, max: number) => Vec3` - Returns a vector with a length no less than `min` and no more than `max`. 
-  * `clampLengthMax: (max: number) => Vec3` - Returns a vector with a length no more than `max`. 
-  * `clampLengthMin: (min: number) => Vec3` - Returns a vector with a length no less than `min`. 
-  * `mulAdd: (a: Vec3, b: Vec3) => Vec3` - Fused multiply-add. Computes `(Vec3 * a) + b` element-wise with only one rounding
-error, yielding a more accurate result than an unfused multiply-add. 
-  * `angleBetween: (rhs: Vec3) => number` - Returns the angle (in radians) between `Vec3` and `rhs` in the range `[-π, +π]`.
+[comparing floating point numbers](https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/). 
+  * `clampLength: (min: number, max: number) => Vec3` - Returns a vector with a length no less than `min` and no more than `max`.
+Always returns a new vector, even when no clamping is needed. 
+  * `clampLengthMax: (max: number) => Vec3` - Returns a vector with a length no more than `max`.
+Always returns a new vector, even when no clamping is needed. 
+  * `clampLengthMin: (min: number) => Vec3` - Returns a vector with a length no less than `min`.
+Always returns a new vector, even when no clamping is needed. 
+  * `mulAdd: (a: Vec3, b: Vec3) => Vec3` - Computes `(Vec3 * a) + b` element-wise, allocating a single vector.
+Unlike glam-rs this is not a fused multiply-add: JavaScript has no FMA, so the result is
+rounded twice, exactly like `this.mul(a).add(b)`. 
+  * `angleBetween: (rhs: Vec3) => number` - Returns the angle (in radians) between `Vec3` and `rhs` in the range `[0, +π]`.
 The inputs do not need to be unit vectors however they must be non-zero. 
   * `anyOrthogonalVector: () => Vec3` - Returns some vector that is orthogonal to the given one.
 The input vector must be finite and non-zero.
-The output vector is not necessarily unit length. For that use [`anyOrthonormalVector()`] instead. 
+The output vector is not necessarily unit length. For that use `anyOrthonormalVector()` instead. 
   * `anyOrthonormalVector: () => Vec3` - Returns any unit vector that is orthogonal to the given one.
 The input vector must be unit length. 
-  * `anyOrthonormalPair: () => Vec3[]` - Given a unit vector return two other vectors that together form an orthonormal
+  * `anyOrthonormalPair: () => [Vec3, Vec3]` - Given a unit vector return two other vectors that together form an orthonormal
 basis. That is, all three vectors are orthogonal to each other and are normalized. 
   * `div: (rhs: number | Vec3) => Vec3` - Divides a Vec3 by another Vector, or by a number
 (this.x / rhs.x, this.y / rhs.y) or (this.x / rhs, this.y / rhs). 
@@ -421,7 +429,7 @@ A true element in the mask uses the corresponding element from `ifTrue`, and fal
   * `clone: () => Vec4` - Returns a new vector with the same elements, so it can be mutated independently. 
   * `toArray: () => [number, number, number, number]` - [x, y, z, w] 
   * `dot: (rhs: Vec4) => number` - Computes the dot product of `Vec4` and `rhs`. 
-  * `dotIntoVec: (rhs: Vec4) => Vec4` - Returns a vector where every component is the dot product of `Vec3` and `rhs`. 
+  * `dotIntoVec: (rhs: Vec4) => Vec4` - Returns a vector where every component is the dot product of `Vec4` and `rhs`. 
   * `min: (rhs: Vec4) => Vec4` - Returns a vector containing the minimum values for each element of `Vec4` and `rhs`.
 In other words this computes `Math.min(this.x, rhs.x), Math.min(this.y, rhs.y)..`. 
   * `max: (rhs: Vec4) => Vec4` - Returns a vector containing the maximum values for each element of `Vec4` and `rhs`.
@@ -443,11 +451,11 @@ In other words this computes `[this.x > rhs.x, this.y > rhs.y..]` for all elemen
 In other words this computes `[this.x <= rhs.x, this.y <= rhs.y..]` for all elements. 
   * `cmplt: (rhs: Vec4) => BVec4` - Returns a vector mask containing the result of a `<` comparison for each element of `Vec4` and `rhs`.
 In other words this computes `[this.x < rhs.x, this.y < rhs.y..]` for all elements. 
-  * `abs: () => Vec4` - Returns a vector containing the absolute value of each element of `Vec3`. 
+  * `abs: () => Vec4` - Returns a vector containing the absolute value of each element of `Vec4`. 
   * `signum: () => Vec4` - Returns a vector with elements representing the sign of `Vec4`.
 - `1` if the number is positive, `+0` or `INFINITY`
 - `-1` if the number is negative, `-0` or `NEG_INFINITY` 
-  * `isNegativeBitmask: () => number` - Returns a bitmask with the lowest 2 bits set to the sign bits from the elements of `Vec4`.
+  * `isNegativeBitmask: () => number` - Returns a bitmask with the lowest 4 bits set to the sign bits from the elements of `Vec4`.
 A negative element results in a `1` bit and a positive element in a `0` bit.  Element `x` goes
 into the first lowest bit, element `y` into the second, etc. 
   * `isFinite: () => boolean` - Returns `true` if, and only if, all elements are finite. If any element is either `NaN`, positive or negative infinity, this will return `false`. 
@@ -474,13 +482,13 @@ Uses a precision threshold of `1e-4`.
 `rhs` must be of non-zero length. 
   * `rejectFrom: (rhs: Vec4) => Vec4` - Returns the vector rejection of `Vec4` from `rhs`.
 The vector rejection is the vector perpendicular to the projection of `Vec4` onto
-`rhs`, in rhs words the result of `Vec4 - this.project_onto(rhs)`.
+`rhs`, in other words the result of `this.sub(this.projectOnto(rhs))`.
 `rhs` must be of non-zero length. 
   * `projectOntoNormalized: (rhs: Vec4) => Vec4` - Returns the vector projection of `Vec4` onto `rhs`.
 `rhs` must be normalized. 
   * `rejectFromNormalized: (rhs: Vec4) => Vec4` - Returns the vector rejection of `Vec4` from `rhs`.
 The vector rejection is the vector perpendicular to the projection of `Vec4` onto
-`rhs`, in rhs words the result of `Vec4.sub(this.projectOnto(rhs))`.
+`rhs`, in other words the result of `this.sub(this.projectOntoNormalized(rhs))`.
 `rhs` must be normalized. 
   * `round: () => Vec4` - Returns a vector containing the nearest integer to a number for each element of `Vec4`.
 Round half-way cases away from 0. 
@@ -510,13 +518,17 @@ This can be used to compare if two vectors contain similar elements. It works be
 comparing with a known value. The `maxAbsDiff` that should be used used depends on
 the values being compared against.
 For more see
-[comparing floating point numbers](https:/**randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/). 
-  * `clampLength: (min: number, max: number) => Vec4` - Returns a vector with a length no less than `min` and no more than `max`. 
-  * `clampLengthMax: (max: number) => Vec4` - Returns a vector with a length no more than `max`. 
-  * `clampLengthMin: (min: number) => Vec4` - Returns a vector with a length no less than `min`. 
-  * `mulAdd: (a: Vec4, b: Vec4) => Vec4` - Fused multiply-add. Computes `(Vec4 * a) + b` element-wise with only one rounding
-error, yielding a more accurate result than an unfused multiply-add. 
-  * `angleBetween: (rhs: Vec4) => number` - Returns the angle (in radians) between `Vec4` and `rhs` in the range `[-π, +π]`.
+[comparing floating point numbers](https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/). 
+  * `clampLength: (min: number, max: number) => Vec4` - Returns a vector with a length no less than `min` and no more than `max`.
+Always returns a new vector, even when no clamping is needed. 
+  * `clampLengthMax: (max: number) => Vec4` - Returns a vector with a length no more than `max`.
+Always returns a new vector, even when no clamping is needed. 
+  * `clampLengthMin: (min: number) => Vec4` - Returns a vector with a length no less than `min`.
+Always returns a new vector, even when no clamping is needed. 
+  * `mulAdd: (a: Vec4, b: Vec4) => Vec4` - Computes `(Vec4 * a) + b` element-wise, allocating a single vector.
+Unlike glam-rs this is not a fused multiply-add: JavaScript has no FMA, so the result is
+rounded twice, exactly like `this.mul(a).add(b)`. 
+  * `angleBetween: (rhs: Vec4) => number` - Returns the angle (in radians) between `Vec4` and `rhs` in the range `[0, +π]`.
 The inputs do not need to be unit vectors however they must be non-zero. 
   * `div: (rhs: number | Vec4) => Vec4` - Divides a Vec4 by another Vector, or by a number
 (this.x / rhs.x, this.y / rhs.y) or (this.x / rhs, this.y / rhs). 
@@ -556,9 +568,9 @@ the cheapest option for hot paths (e.g. updating positions every frame).
   * `ZERO: Mat2` - All zeroes. (0, 0..) 
   * `IDENTITY: Mat2` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
   * `NAN: Mat2` - All `NaN`. (NaN, NaN..) 
-  * `fromCols: (xAxis: Vec2, yAxis: Vec2) => Mat2` - Creates a 2x2 matrix from four column vectors. 
-  * `fromColsArray: (m: number[]) => Mat2` - Creates a 2x2 matrix from four column vectors. 
-  * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
+  * `fromCols: (xAxis: Vec2, yAxis: Vec2) => Mat2` - Creates a 2x2 matrix from 2 column vectors. 
+  * `fromColsArray: (m: [number, number, number, number]) => Mat2` - Creates a 2x2 matrix from an array of 4 values stored in column major order. 
+  * `toColsArray: () => [number, number, number, number]` - Creates an array storing data in column major order. 
 
 * `Mat` - A 3x3 column major matrix. 
   * `xAxis: Vec3` - Column 0 of the matrix (the `x` axis). 
@@ -568,9 +580,9 @@ the cheapest option for hot paths (e.g. updating positions every frame).
   * `ZERO: Mat3` - All zeroes. (0, 0..) 
   * `IDENTITY: Mat3` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
   * `NAN: Mat3` - All `NaN`. (NaN, NaN..) 
-  * `fromCols: (xAxis: Vec3, yAxis: Vec3, zAxis: Vec3) => Mat3` - Creates a 3x3 matrix from four column vectors. 
-  * `fromColsArray: (m: number[]) => Mat3` - Creates a 3x3 matrix from four column vectors. 
-  * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
+  * `fromCols: (xAxis: Vec3, yAxis: Vec3, zAxis: Vec3) => Mat3` - Creates a 3x3 matrix from 3 column vectors. 
+  * `fromColsArray: (m: [number, number, number, number, number, number, number, number, number]) => Mat3` - Creates a 3x3 matrix from an array of 9 values stored in column major order. 
+  * `toColsArray: () => [number, number, number, number, number, number, number, number, number]` - Creates an array storing data in column major order. 
 
 * `Mat` - A 4x4 column major matrix. 
   * `xAxis: Vec4` - Column 0 of the matrix (the `x` axis). 
@@ -581,7 +593,7 @@ the cheapest option for hot paths (e.g. updating positions every frame).
   * `ZERO: Mat4` - All zeroes. (0, 0..) 
   * `IDENTITY: Mat4` - All `Identity`, where all diagonal elements are `1`, and all off-diagonal elements are `0`. 
   * `NAN: Mat4` - All `NaN`. (NaN, NaN..) 
-  * `fromCols: (xAxis: Vec4, yAxis: Vec4, zAxis: Vec4, wAxis: Vec4) => Mat4` - Creates a 4x4 matrix from four column vectors. 
-  * `fromColsArray: (m: number[]) => Mat4` - Creates a 4x4 matrix from four column vectors. 
-  * `toColsArray: () => number[]` - Creates an array storing data in column major order. 
+  * `fromCols: (xAxis: Vec4, yAxis: Vec4, zAxis: Vec4, wAxis: Vec4) => Mat4` - Creates a 4x4 matrix from 4 column vectors. 
+  * `fromColsArray: (m: [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number]) => Mat4` - Creates a 4x4 matrix from an array of 16 values stored in column major order. 
+  * `toColsArray: () => [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number]` - Creates an array storing data in column major order. 
 

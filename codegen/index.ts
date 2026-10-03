@@ -30,10 +30,11 @@ const build = async () => {
 			...type,
 		});
 
-		const elements = getSourceInfoElements(path);
-
-		Bun.write(path, renderedSourceCode);
+		await Bun.write(path, renderedSourceCode);
 		await $`biome format --write ${path}`;
+
+		// Extract after writing, so the docs describe the freshly generated file.
+		const elements = getSourceInfoElements(path);
 
 		sourceInfos.push({
 			name,
@@ -52,8 +53,9 @@ const build = async () => {
 		sourceInfos,
 	});
 
-	Bun.write(ExportPaths.Index, renderedIndex);
-	Bun.write(ExportPaths.Docs, renderedDocs);
+	await Bun.write(ExportPaths.Index, renderedIndex);
+	await $`biome format --write ${ExportPaths.Index}`;
+	await Bun.write(ExportPaths.Docs, renderedDocs);
 };
 
 build();

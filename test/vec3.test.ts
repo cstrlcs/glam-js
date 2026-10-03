@@ -481,4 +481,17 @@ describe("Vec3", () => {
 		c.x = 5;
 		expect(v.x).toEqual(1);
 	});
+
+	test("Clamp Length Returns A Copy", () => {
+		const v = new Vec3(2, 1, 0);
+
+		for (const clamped of [
+			v.clampLength(0.5, 5),
+			v.clampLengthMax(5),
+			v.clampLengthMin(0.5),
+		]) {
+			expect(clamped).toEqual(v);
+			expect(clamped).not.toBe(v);
+		}
+	});
 });

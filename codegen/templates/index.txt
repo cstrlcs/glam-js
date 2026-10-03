@@ -2,5 +2,5 @@
 
 
 <% for (const item of it.types) { %>
-export { <%= `${item.name}${item.length}` %> } from "./<%= `${item.name}${item.length}` %>";
+export { <%= `${item.name}${item.length}` %> } from "./<%= `${item.name}${item.length}` %>.js";
 <% } %>

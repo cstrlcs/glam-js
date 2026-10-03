@@ -4,8 +4,9 @@
 <%
 	const properties = ["xAxis", "yAxis", "zAxis", "wAxis",].splice(0, it.length);
 	const type = `${it.name}${it.length}`;
+	const colsArray = `[${Array(it.length * it.length).fill("number").join(", ")}]`;
 %>
-import { Vec<%= it.length %> } from "./";
+import { Vec<%= it.length %> } from "./Vec<%= it.length %>.js";
 
 export class <%= type %> {
 	// Fields are `declare`d instead of parameter properties so no class fields
@@ -51,24 +52,24 @@ export class <%= type %> {
 		return new <%= type %>(<%= properties.map(() => `new Vec${it.length}(${properties.map(() => 'Number.NaN').join(", ")})`).join(", ") %>);
 	}
 
-	/** 
-	 * Creates a <%= it.length %>x<%= it.length %> matrix from four column vectors.
+	/**
+	 * Creates a <%= it.length %>x<%= it.length %> matrix from <%= it.length %> column vectors.
 	 */
 	static fromCols(<%= properties.map(value => `${value}: Vec${it.length}`).join(", ") %>): <%= type %> {
 		return new <%= type %>(<%= properties.join(", ") %>);
 	}
 
-	/** 
-	 * Creates a <%= it.length %>x<%= it.length %> matrix from four column vectors.
+	/**
+	 * Creates a <%= it.length %>x<%= it.length %> matrix from an array of <%= it.length * it.length %> values stored in column major order.
 	 */
-	static fromColsArray(m: number[]): <%= type %> {
+	static fromColsArray(m: <%= colsArray %>): <%= type %> {
 		return <%= type %>.new(<%= [...Array(it.length * it.length).keys()].map(value => `m[${value}]`).join(", ") %>);
 	}
 
 	/** 
 	 * Creates an array storing data in column major order.
 	 */
-	toColsArray(): number[] {
+	toColsArray(): <%= colsArray %> {
 		return [
 			<%= properties.map(value => properties.map(value2 => `this.${value}.${value2[0]}`)).flat().join(", ") %>
 		]
