@@ -50,7 +50,7 @@ Notable Changes:
 - 📦 0 dependencies
 - 🔢 `number` types
   - vectors: `Vec2`, `Vec3` and `Vec4`
-  - square matrices: `Mat2`, `Mat3`, `Mat3A` and `Mat4` (⚠️ PARTIAL, untested)
+  - square matrices: `Mat2`, `Mat3` and `Mat4` (⚠️ PARTIAL: constructors only)
   - ~~a quaternion type: `Quat`~~ (⚠️ WIP)
   - ~~affine transformation types: `Affine2` and `Affine3A`~~ (⚠️ WIP)
 - ☑️ `boolean` types
@@ -79,9 +79,25 @@ import { Vec3 } from "glam-js";
 
 const vec = new Vec3(1, 2, 3);
 
-vec.div(3);
-vec.normalize();
+// Methods return a new vector and leave `vec` untouched.
+const direction = vec.div(3).normalize();
 ```
+
+### Performance tips ⚡
+
+Methods return a new instance by default, keeping the API close to glam-rs' value
+semantics. In hot paths (e.g. updating thousands of entities every frame), prefer the
+in-place operators, which mutate and return the same vector:
+
+```ts
+velocity.mulAssign(0.99); // no allocation
+position.addAssign(velocity.mul(dt)); // 1 allocation instead of 2
+```
+
+- Use `clone()` before mutating a vector that is referenced elsewhere.
+- Constants such as `Vec3.ZERO` return a fresh instance on every access, so hoist them out
+  of tight loops (or use the scalar overloads, e.g. `v.eq(0)`).
+- Run `bun bench` (Bun/JavaScriptCore) or `bun bench:node` (Node.js/V8) to benchmark the library.
 
 ---
 
