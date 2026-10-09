@@ -1,0 +1,22 @@
+# glam-js
+
+
+## API Reference
+
+<% for (const classInfo of it.sourceInfos) { %>
+* `<%= classInfo.name %>` - <%= classInfo.description.replace(/\s+/g, " ") %> 
+<% for (const element of classInfo.elements) { %>
+  * `<%= element.name %>: <%= element.type %>`<%= element.description ? ` - ${element.description.replace(/\s+/g, " ")}` : "" %> 
+<% } %>
+
+<% } %>
+
+## Modules
+
+<% for (const moduleInfo of it.moduleInfos) { %>
+* `<%= moduleInfo.name %>` - <%= moduleInfo.description.replace(/\s+/g, " ") %> 
+<% for (const element of moduleInfo.elements) { %>
+  * `<%= element.name %>: <%= element.type %>`<%= element.description ? ` - ${element.description.replace(/\s+/g, " ")}` : "" %> 
+<% } %>
+
+<% } %>

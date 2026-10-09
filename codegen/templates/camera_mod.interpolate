@@ -1,0 +1,55 @@
+
+
+<% if (it.level === "camera") { %>
+<% for (const handedness of it.handednesses) { %>
+/**
+ * View functions produce <%= handedness.label %> Y-up view space with
+ * X-right and the <%= handedness.isRh ? "negative Z" : "positive Z" %> axis pointing forward.
+ *
+ * Projection functions expect <%= handedness.label %> Y-up view space input.
+ */
+export * as <%= handedness.name %> from "./<%= handedness.name %>/index.js";
+<% } %>
+<% } else if (it.level === "handedness") { %>
+<% const { isRh, label } = it.handedness; %>
+/**
+ * Projection matrix constructors.
+ *
+ * Expects <%= label %> Y-up view space input.
+ *
+ * Each sub-module targets a specific graphics API convention:
+ *
+ * * `opengl` - NDC Z range **[-1, 1]**, Y-up
+ * * `directx` - NDC Z range **[0, 1]**, Y-up
+ * * `vulkan` - NDC Z range **[0, 1]**, Y-down
+ */
+export * as proj from "./proj/index.js";
+/**
+ * View (camera) constructors for <%= label %> world coordinate systems.
+ *
+ * Every function transforms world space points into a <%= label %> Y-up
+ * view space with X-right and <%= isRh ? "-Z-forward" : "+Z-forward" %>.
+ *
+ * * `lookAt*` targets a focal point (`center`)
+ * * `lookTo*` targets a forward direction (`dir`)
+ *
+ * Functions returning `Mat4`, `Affine3`, or
+ * similar return a full view transform (rotation and translation).
+ * Functions returning `Mat3`, or `Quat` return
+ * only the view rotation.
+ */
+export * as view from "./view.js";
+<% } else { %>
+<% for (const api of it.apis) { %>
+/**
+ * <%= api.label %> NDC convention: Z range **<%= api.ndcZ %>**, <%= api.ndcY %>.
+ *
+ * Expects a <%= it.handedness.label %> Y-up view space input.
+<% if (api.name !== "opengl") { %>
+ *
+ * Includes standard, infinite-far, and reverse-depth variants.
+<% } %>
+ */
+export * as <%= api.name %> from "./<%= api.name %>.js";
+<% } %>
+<% } %>

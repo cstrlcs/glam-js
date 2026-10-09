@@ -1,10 +1,11 @@
 {
-  "extends": "@cstrlcs/configs",
+  "extends": "@cstrlcs/configs/tsconfig/base.json",
   "compilerOptions": {
     "types": ["bun-types"],
     "paths": {
       "@": ["./src"],
       "@/codegen": ["./codegen"]
     }
-  }
+  },
+  "exclude": ["dist", "node_modules"]
 }

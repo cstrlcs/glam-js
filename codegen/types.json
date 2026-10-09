@@ -1,56 +1,78 @@
 [
-	{
-		"name": "BVec",
-		"template": "./codegen/templates/bvec.txt",
-		"description": "A 2-dimensional boolean vector.",
-		"length": 2
-	},
-	{
-		"name": "BVec",
-		"template": "./codegen/templates/bvec.txt",
-		"description": "A 3-dimensional boolean vector.",
-		"length": 3
-	},
-	{
-		"name": "BVec",
-		"template": "./codegen/templates/bvec.txt",
-		"description": "A 4-dimensional boolean vector.",
-		"length": 4
-	},
-	{
-		"name": "Vec",
-		"template": "./codegen/templates/vec.txt",
-		"description": "A 2-dimensional vector.",
-		"length": 2
-	},
-	{
-		"name": "Vec",
-		"template": "./codegen/templates/vec.txt",
-		"description": "A 3-dimensional vector.",
-		"length": 3
-	},
-	{
-		"name": "Vec",
-		"template": "./codegen/templates/vec.txt",
-		"description": "A 4-dimensional vector.",
-		"length": 4
-	},
-	{
-		"name": "Mat",
-		"template": "./codegen/templates/mat.txt",
-		"description": "A 2x2 column major matrix.",
-		"length": 2
-	},
-	{
-		"name": "Mat",
-		"template": "./codegen/templates/mat.txt",
-		"description": "A 3x3 column major matrix.",
-		"length": 3
-	},
-	{
-		"name": "Mat",
-		"template": "./codegen/templates/mat.txt",
-		"description": "A 4x4 column major matrix.",
-		"length": 4
-	}
+  {
+    "name": "BVec",
+    "template": "./codegen/templates/bvec.interpolate",
+    "description": "A 2-dimensional `bool` vector mask.",
+    "length": 2
+  },
+  {
+    "name": "BVec",
+    "template": "./codegen/templates/bvec.interpolate",
+    "description": "A 3-dimensional `bool` vector mask.",
+    "length": 3
+  },
+  {
+    "name": "BVec",
+    "template": "./codegen/templates/bvec.interpolate",
+    "description": "A 4-dimensional `bool` vector mask.",
+    "length": 4
+  },
+  {
+    "name": "Vec",
+    "template": "./codegen/templates/vec.interpolate",
+    "description": "A 2-dimensional vector.",
+    "length": 2
+  },
+  {
+    "name": "Vec",
+    "template": "./codegen/templates/vec.interpolate",
+    "description": "A 3-dimensional vector.",
+    "length": 3
+  },
+  {
+    "name": "Vec",
+    "template": "./codegen/templates/vec.interpolate",
+    "description": "A 4-dimensional vector.",
+    "length": 4
+  },
+  {
+    "name": "Mat",
+    "template": "./codegen/templates/mat.interpolate",
+    "description": "A 2x2 column major matrix.",
+    "length": 2
+  },
+  {
+    "name": "Mat",
+    "template": "./codegen/templates/mat.interpolate",
+    "description": "A 3x3 column major matrix.",
+    "length": 3
+  },
+  {
+    "name": "Mat",
+    "template": "./codegen/templates/mat.interpolate",
+    "description": "A 4x4 column major matrix.",
+    "length": 4
+  },
+  {
+    "name": "Quat",
+    "template": "./codegen/templates/quat.interpolate",
+    "description": "A quaternion representing an orientation."
+  },
+  {
+    "name": "EulerRot",
+    "template": "./codegen/templates/euler.interpolate",
+    "description": "Euler rotation sequences."
+  },
+  {
+    "name": "Affine",
+    "template": "./codegen/templates/affine.interpolate",
+    "description": "A 2D affine transform, which can represent translation, rotation, scaling and shear.",
+    "length": 2
+  },
+  {
+    "name": "Affine",
+    "template": "./codegen/templates/affine.interpolate",
+    "description": "A 3D affine transform, which can represent translation, rotation, scaling and shear.",
+    "length": 3
+  }
 ]

@@ -1,42 +1,60 @@
 {
   "name": "glam-js",
   "version": "0.0.7",
+  "private": true,
+  "description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
+  "keywords": [
+    "bun",
+    "game-engines",
+    "gamedev",
+    "glam",
+    "math",
+    "matrix",
+    "quaternion",
+    "vector"
+  ],
+  "homepage": "https://github.com/cstrlcs/glam-js#readme",
+  "bugs": "https://github.com/cstrlcs/glam-js/issues",
+  "license": "MIT or Apache-2.0",
   "author": "Lucas Castro <contact@lucascastro.dev>, Cameron Hart <cameron.hart@gmail.com> (glam-rs)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cstrlcs/glam-js.git"
   },
-  "main": "dist/index.js",
-  "devDependencies": {
-    "@biomejs/biome": "latest",
-    "@cstrlcs/configs": "latest",
-    "bun-types": "latest",
-    "lefthook": "latest",
-    "tinyplate.js": "latest"
-  },
-  "bugs": "https://github.com/cstrlcs/glam-js/issues",
-  "description": "A simple and fast 3D math library for games and graphics. Ported from `bitshifter/glam-rs`.",
   "files": [
     "dist"
   ],
-  "homepage": "https://github.com/cstrlcs/glam-js#readme",
-  "keywords": [
-    "gamedev",
-    "math",
-    "matrix",
-    "vector",
-    "quaternion",
-    "bun",
-    "glam",
-    "game-engines"
-  ],
-  "license": "MIT or Apache-2.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "codegen": "bun ./codegen",
     "build:js": "bun build ./src/index.ts --outdir ./dist --minify",
-    "build:declaration": "tsc --declaration --emitDeclarationOnly --outDir ./dist ./src/index.ts",
-    "release": "bun codegen && bun build:js && bun build:declaration",
-    "postinstall": "lefthook install"
+    "build:declaration": "tsc --declaration --emitDeclarationOnly --target esnext --module esnext --moduleResolution bundler --outDir ./dist ./src/index.ts",
+    "build": "bun codegen && bun build:js && bun build:declaration",
+    "release": "bun run build && publi.sh",
+    "typecheck": "tsc --noEmit -p .",
+    "prepare": "lefthook install",
+    "lint": "oxlint --type-aware .",
+    "lint:fix": "oxlint --type-aware --fix; s=$?; oxfmt; exit $s"
   },
-  "types": "dist/index.d.ts"
+  "devDependencies": {
+    "@cstrlcs/configs": "9.5.2",
+    "@cstrlcs/interpolate": "latest",
+    "@types/bun": "1.4.2",
+    "bun-types": "latest",
+    "lefthook": "latest",
+    "oxfmt": "0.65.0",
+    "oxlint": "1.80.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "typescript": "^5.4.2"
+  },
+  "packageManager": "bun@1.4.0"
 }

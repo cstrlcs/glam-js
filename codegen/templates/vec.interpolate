@@ -1,0 +1,1279 @@
+
+
+<%
+	const properties = ["x", "y", "z", "w",].splice(0, it.length);
+	const type = `${it.name}${it.length}`;
+	const dim = it.length;
+	const each = (fn, separator = ", ") => properties.map(fn).join(separator);
+	const signum = (value) => `Math.sign(${value} + 1 / ${value})`;
+	const isSignNegative = (value) => `${value} + 1 / ${value} < 0`;
+	const axis = (index, one) => properties.map((_, index2) => index === index2 ? one : '0').join(', ');
+	const tuple = `[${properties.map(() => 'number').join(', ')}]`;
+	const lower = { Vec3: "Vec2", Vec4: "Vec3" }[type];
+	const higher = { Vec2: "Vec3", Vec3: "Vec4" }[type];
+%>
+import { B<%= type %> } from "./B<%= type %>.js";
+<% if (lower) { %>
+import { <%= lower %> } from "./<%= lower %>.js";
+<% } %>
+<% if (higher) { %>
+import { <%= higher %> } from "./<%= higher %>.js";
+<% } %>
+
+/** A <%= dim %>-dimensional vector. */
+export class <%= type %> {
+<% for (const property of properties) { %>
+	declare <%= property %>: number;
+<% } %>
+
+	constructor(<%= each(value => `${value}: number`) %>) {
+<% for (const property of properties) { %>
+		this.<%= property %> = <%= property %>;
+<% } %>
+	}
+
+	/** All zeroes. */
+	static get ZERO() {
+		return new <%= type %>(<%= each(() => '0') %>);
+	}
+
+	/** All ones. */
+	static get ONE() {
+		return new <%= type %>(<%= each(() => '1') %>);
+	}
+
+	/** All negative ones. */
+	static get NEG_ONE() {
+		return new <%= type %>(<%= each(() => '-1') %>);
+	}
+
+	/** All `-Number.MAX_VALUE`. */
+	static get MIN() {
+		return new <%= type %>(<%= each(() => '-Number.MAX_VALUE') %>);
+	}
+
+	/** All `Number.MAX_VALUE`. */
+	static get MAX() {
+		return new <%= type %>(<%= each(() => 'Number.MAX_VALUE') %>);
+	}
+
+	/** All `NaN`. */
+	static get NAN() {
+		return new <%= type %>(<%= each(() => 'Number.NaN') %>);
+	}
+
+	/** All `Infinity`. */
+	static get INFINITY() {
+		return new <%= type %>(<%= each(() => 'Number.POSITIVE_INFINITY') %>);
+	}
+
+	/** All `-Infinity`. */
+	static get NEG_INFINITY() {
+		return new <%= type %>(<%= each(() => 'Number.NEGATIVE_INFINITY') %>);
+	}
+
+<% for (const [index, value] of properties.entries()) { %>
+	/** A unit vector pointing along the positive <%= value.toUpperCase() %> axis. */
+	static get <%= value.toUpperCase() %>() {
+		return new <%= type %>(<%= axis(index, '1') %>);
+	}
+
+<% } %>
+<% for (const [index, value] of properties.entries()) { %>
+	/** A unit vector pointing along the negative <%= value.toUpperCase() %> axis. */
+	static get NEG_<%= value.toUpperCase() %>() {
+		return new <%= type %>(<%= axis(index, '-1') %>);
+	}
+
+<% } %>
+	/** The unit axes. */
+	static get AXES() {
+		return [<%= each((_, index) => `new ${type}(${axis(index, '1')})`) %>];
+	}
+
+	/** Creates a new vector. */
+	static new(<%= each(value => `${value}: number`) %>): <%= type %> {
+		return new <%= type %>(<%= each(value => value) %>);
+	}
+
+	/** Creates a vector with all elements set to `v`. */
+	static splat(v: number): <%= type %> {
+		return new <%= type %>(<%= each(() => 'v') %>);
+	}
+
+	/** Returns a vector containing each element of `this` modified by a mapping function `f`. */
+	map(f: (value: number) => number): <%= type %> {
+		return new <%= type %>(<%= each(value => `f(this.${value})`) %>);
+	}
+
+	/**
+	 * Creates a vector from the elements in `ifTrue` and `ifFalse`, selecting which to use
+	 * for each element of `this`.
+	 *
+	 * A true element in the mask uses the corresponding element from `ifTrue`, and false
+	 * uses the element from `ifFalse`.
+	 */
+	static select(mask: B<%= type %>, ifTrue: <%= type %>, ifFalse: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const value of properties) { %>
+			mask.<%= value %> ? ifTrue.<%= value %> : ifFalse.<%= value %>,
+<% } %>
+		);
+	}
+
+	/** Creates a new vector from an array. */
+	static fromArray(a: <%= tuple %>): <%= type %> {
+		return new <%= type %>(<%= each((_, index) => `a[${index}]`) %>);
+	}
+
+	clone(): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value}`) %>);
+	}
+
+	/** Converts `this` to `[<%= properties.join(', ') %>]` */
+	toArray(): <%= tuple %> {
+		return [<%= each(value => `this.${value}`) %>];
+	}
+
+	/**
+	 * Creates a vector from the first <%= dim %> values in `slice`.
+	 *
+	 * Throws a `RangeError` if `slice` is less than <%= dim %> elements long.
+	 */
+	static fromSlice(slice: ArrayLike<number>): <%= type %> {
+		if (slice.length < <%= dim %>) {
+			throw new RangeError("slice is less than <%= dim %> elements long");
+		}
+
+		return new <%= type %>(<%= each((_, index) => `slice[${index}] ?? Number.NaN`) %>);
+	}
+
+	/**
+	 * Writes the elements of `this` to the first <%= dim %> elements in `slice`.
+	 *
+	 * Throws a `RangeError` if `slice` is less than <%= dim %> elements long.
+	 */
+	writeToSlice(slice: { [index: number]: number; readonly length: number }): void {
+		if (slice.length < <%= dim %>) {
+			throw new RangeError("slice is less than <%= dim %> elements long");
+		}
+
+<% for (const [index, value] of properties.entries()) { %>
+		slice[<%= index %>] = this.<%= value %>;
+<% } %>
+	}
+
+<% if (type === "Vec2") { %>
+	/** Creates a 3D vector from `this` and the given `z` value. */
+	extend(z: number): Vec3 {
+		return new Vec3(this.x, this.y, z);
+	}
+
+<% } %>
+<% if (type === "Vec3") { %>
+	/** Creates a 4D vector from `this` and the given `w` value. */
+	extend(w: number): Vec4 {
+		return new Vec4(this.x, this.y, this.z, w);
+	}
+
+	/** Creates a 2D vector from the `x` and `y` elements of `this`, discarding `z`. */
+	truncate(): Vec2 {
+		return new Vec2(this.x, this.y);
+	}
+
+	/** Projects a homogeneous coordinate to 3D space by performing perspective divide. */
+	static fromHomogeneous(v: Vec4): Vec3 {
+		return new Vec3(v.x / v.w, v.y / v.w, v.z / v.w);
+	}
+
+	/** Creates a homogeneous coordinate from `this`, equivalent to `this.extend(1.0)`. */
+	toHomogeneous(): Vec4 {
+		return new Vec4(this.x, this.y, this.z, 1);
+	}
+
+<% } %>
+<% if (type === "Vec4") { %>
+	/** Creates a 3D vector from the `x`, `y` and `z` elements of `this`, discarding `w`. */
+	truncate(): Vec3 {
+		return new Vec3(this.x, this.y, this.z);
+	}
+
+	/** Projects a homogeneous coordinate to 3D space by performing perspective divide. */
+	project(): Vec3 {
+		return Vec3.fromHomogeneous(this);
+	}
+
+<% } %>
+<% for (const property of properties) { %>
+	/** Creates a <%= dim %>D vector from `this` with the given value of `<%= property %>`. */
+	with<%= property.toUpperCase() %>(<%= property %>: number): <%= type %> {
+		return new <%= type %>(<%= each(value => value === property ? value : `this.${value}`) %>);
+	}
+
+<% } %>
+	/** Computes the dot product of `this` and `rhs`. */
+	dot(rhs: <%= type %>): number {
+		return <%= each(value => `this.${value} * rhs.${value}`, ' + ') %>;
+	}
+
+	/** Returns a vector where every component is the dot product of `this` and `rhs`. */
+	dotIntoVec(rhs: <%= type %>): <%= type %> {
+		return <%= type %>.splat(this.dot(rhs));
+	}
+
+<% if (type === "Vec3") { %>
+	/** Computes the cross product of `this` and `rhs`. */
+	cross(rhs: Vec3): Vec3 {
+		return new Vec3(
+			this.y * rhs.z - rhs.y * this.z,
+			this.z * rhs.x - rhs.z * this.x,
+			this.x * rhs.y - rhs.x * this.y,
+		);
+	}
+
+<% } %>
+	/**
+	 * Returns a vector containing the minimum values for each element of `this` and `rhs`.
+	 *
+	 * In other words this computes `[min(x, rhs.x), min(this.y, rhs.y), ..]`.
+	 */
+	min(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.min(this.${value}, rhs.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the maximum values for each element of `this` and `rhs`.
+	 *
+	 * In other words this computes `[max(this.x, rhs.x), max(this.y, rhs.y), ..]`.
+	 */
+	max(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.max(this.${value}, rhs.${value})`) %>);
+	}
+
+	/**
+	 * Component-wise clamping of values, similar to `Math.min(Math.max(value, min), max)`.
+	 *
+	 * Each element in `min` must be less-or-equal to the corresponding element in `max`.
+	 */
+	clamp(min: <%= type %>, max: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.min(Math.max(this.${value}, min.${value}), max.${value})`) %>);
+	}
+
+	/**
+	 * Returns the horizontal minimum of `this`.
+	 *
+	 * In other words this computes `min(x, y, ..)`.
+	 */
+	minElement(): number {
+		return Math.min(<%= each(value => `this.${value}`) %>);
+	}
+
+	/**
+	 * Returns the horizontal maximum of `this`.
+	 *
+	 * In other words this computes `max(x, y, ..)`.
+	 */
+	maxElement(): number {
+		return Math.max(<%= each(value => `this.${value}`) %>);
+	}
+
+<% for (const [name, op, word] of [["min", "<", "minimum"], ["max", ">", "maximum"]]) { %>
+	/** Returns the index of the first <%= word %> element of `this`. */
+	<%= name %>Position(): number {
+<% if (dim === 2) { %>
+		return this.x <%= op %>= this.y ? 0 : 1;
+<% } else { %>
+		let <%= name %> = this.x;
+		let index = 0;
+
+<% for (const [index, value] of properties.entries()) { if (index === 0) continue; %>
+		if (this.<%= value %> <%= op %> <%= name %>) {
+<% if (index < dim - 1) { %>
+			<%= name %> = this.<%= value %>;
+<% } %>
+			index = <%= index %>;
+		}
+
+<% } %>
+		return index;
+<% } %>
+	}
+
+<% } %>
+	/**
+	 * Returns the sum of all elements of `this`.
+	 *
+	 * In other words, this computes `this.x + this.y + ..`.
+	 */
+	elementSum(): number {
+		return <%= each(value => `this.${value}`, ' + ') %>;
+	}
+
+	/**
+	 * Returns the product of all elements of `this`.
+	 *
+	 * In other words, this computes `this.x * this.y * ..`.
+	 */
+	elementProduct(): number {
+		return <%= each(value => `this.${value}`, ' * ') %>;
+	}
+
+<% for (const [name, op, jsOp, inOtherWords] of [["cmpeq", "==", "===", "In other words, this computes"], ["cmpne", "!=", "!==", "In other words this computes"], ["cmpge", ">=", ">=", "In other words this computes"], ["cmpgt", ">", ">", "In other words this computes"], ["cmple", "<=", "<=", "In other words this computes"], ["cmplt", "<", "<", "In other words this computes"]]) { %>
+	/**
+	 * Returns a vector mask containing the result of a `<%= op %>` comparison for each element of
+	 * `this` and `rhs`.
+	 *
+	 * <%= inOtherWords %> `[this.x <%= op %> rhs.x, this.y <%= op %> rhs.y, ..]` for all
+	 * elements.
+	 */
+	<%= name %>(rhs: <%= type %>): B<%= type %> {
+		return new B<%= type %>(<%= each(value => `this.${value} ${jsOp} rhs.${value}`) %>);
+	}
+
+<% } %>
+	/** Returns a vector containing the absolute value of each element of `this`. */
+	abs(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.abs(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector with elements representing the sign of `this`.
+	 *
+	 * - `1.0` if the number is positive, `+0.0` or `Infinity`
+	 * - `-1.0` if the number is negative, `-0.0` or `-Infinity`
+	 * - `NaN` if the number is `NaN`
+	 */
+	signum(): <%= type %> {
+		return new <%= type %>(<%= each(value => signum(`this.${value}`)) %>);
+	}
+
+	/** Returns a vector with signs of `rhs` and the magnitudes of `this`. */
+	copysign(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const value of properties) { %>
+			<%= isSignNegative(`rhs.${value}`) %> ? -Math.abs(this.<%= value %>) : Math.abs(this.<%= value %>),
+<% } %>
+		);
+	}
+
+	/**
+	 * Returns a bitmask with the lowest <%= dim %> bits set to the sign bits from the elements of `this`.
+	 *
+	 * A negative element results in a `1` bit and a positive element in a `0` bit.  Element `x` goes
+	 * into the first lowest bit, element `y` into the second, etc.
+	 *
+	 * An element is negative if it has a negative sign, including -0.0 and negative infinity.
+	 */
+	isNegativeBitmask(): number {
+		return <%= each((value, index) => `(${isSignNegative(`this.${value}`)} ? ${2 ** index} : 0)`, ' + ') %>;
+	}
+
+	/**
+	 * Returns a mask indicating which components are negative.
+	 *
+	 * An element is negative if it has a negative sign, including -0.0 and negative infinity.
+	 */
+	isNegativeMask(): B<%= type %> {
+		return new B<%= type %>(<%= each(value => isSignNegative(`this.${value}`)) %>);
+	}
+
+	/**
+	 * Returns `true` if, and only if, all elements are finite.  If any element is either
+	 * `NaN`, positive or negative infinity, this will return `false`.
+	 */
+	isFinite(): boolean {
+		return <%= each(value => `Number.isFinite(this.${value})`, " && ") %>;
+	}
+
+	/**
+	 * Performs `Number.isFinite` on each element of this, returning a vector mask of the results.
+	 *
+	 * In other words, this computes `[Number.isFinite(x), Number.isFinite(y), ...]`.
+	 */
+	isFiniteMask(): B<%= type %> {
+		return new B<%= type %>(<%= each(value => `Number.isFinite(this.${value})`) %>);
+	}
+
+	/** Returns `true` if any elements are `NaN`. */
+	isNan(): boolean {
+		return <%= each(value => `Number.isNaN(this.${value})`, " || ") %>;
+	}
+
+	/**
+	 * Performs `Number.isNaN` on each element of this, returning a vector mask of the results.
+	 *
+	 * In other words, this computes `[Number.isNaN(x), Number.isNaN(y), ...]`.
+	 */
+	isNanMask(): B<%= type %> {
+		return new B<%= type %>(<%= each(value => `Number.isNaN(this.${value})`) %>);
+	}
+
+	/** Computes the length of `this`. */
+	length(): number {
+		return Math.sqrt(this.dot(this));
+	}
+
+	/**
+	 * Computes the squared length of `this`.
+	 *
+	 * This is faster than `length()` as it avoids a square root operation.
+	 */
+	lengthSquared(): number {
+		return this.dot(this);
+	}
+
+	/**
+	 * Computes `1.0 / length()`.
+	 *
+	 * For valid results, `this` must _not_ be of length zero.
+	 */
+	lengthRecip(): number {
+		return 1 / this.length();
+	}
+
+	/** Computes the Euclidean distance between two points in space. */
+	distance(rhs: <%= type %>): number {
+		return Math.sqrt(this.distanceSquared(rhs));
+	}
+
+	/** Compute the squared euclidean distance between two points in space. */
+	distanceSquared(rhs: <%= type %>): number {
+<% for (const value of properties) { %>
+		const <%= value %> = this.<%= value %> - rhs.<%= value %>;
+<% } %>
+
+		return <%= each(value => `${value} * ${value}`, ' + ') %>;
+	}
+
+	/** Returns the element-wise quotient of Euclidean division of `this` by `rhs`. */
+	divEuclid(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const value of properties) { %>
+			Math.trunc(this.<%= value %> / rhs.<%= value %>) - (this.<%= value %> % rhs.<%= value %> < 0 ? Math.sign(rhs.<%= value %>) : 0),
+<% } %>
+		);
+	}
+
+	/** Returns the element-wise remainder of Euclidean division of `this` by `rhs`. */
+	remEuclid(rhs: <%= type %>): <%= type %> {
+<% for (const value of properties) { %>
+		const <%= value %> = this.<%= value %> % rhs.<%= value %>;
+<% } %>
+
+		return new <%= type %>(<%= each(value => `${value} < 0 ? ${value} + Math.abs(rhs.${value}) : ${value}`) %>);
+	}
+
+	/**
+	 * Returns `this` normalized to length 1.0.
+	 *
+	 * For valid results, `this` must be finite and _not_ of length zero, nor very close to zero.
+	 *
+	 * See also `tryNormalize()` and `normalizeOrZero()`.
+	 */
+	normalize(): <%= type %> {
+		return this.mul(this.lengthRecip());
+	}
+
+	/**
+	 * Returns `this` normalized to length 1.0 if possible, else returns `undefined`.
+	 *
+	 * In particular, if the input is zero (or very close to zero), or non-finite,
+	 * the result of this operation will be `undefined`.
+	 *
+	 * See also `normalizeOrZero()`.
+	 */
+	tryNormalize(): <%= type %> | undefined {
+		const rcp = this.lengthRecip();
+
+		return Number.isFinite(rcp) && rcp > 0 ? this.mul(rcp) : undefined;
+	}
+
+	/**
+	 * Returns `this` normalized to length 1.0 if possible, else returns a
+	 * fallback value.
+	 *
+	 * In particular, if the input is zero (or very close to zero), or non-finite,
+	 * the result of this operation will be the fallback value.
+	 *
+	 * See also `tryNormalize()`.
+	 */
+	normalizeOr(fallback: <%= type %>): <%= type %> {
+		const rcp = this.lengthRecip();
+
+		return Number.isFinite(rcp) && rcp > 0 ? this.mul(rcp) : fallback.clone();
+	}
+
+	/**
+	 * Returns `this` normalized to length 1.0 if possible, else returns zero.
+	 *
+	 * In particular, if the input is zero (or very close to zero), or non-finite,
+	 * the result of this operation will be zero.
+	 *
+	 * See also `tryNormalize()`.
+	 */
+	normalizeOrZero(): <%= type %> {
+		const rcp = this.lengthRecip();
+
+		return Number.isFinite(rcp) && rcp > 0 ? this.mul(rcp) : <%= type %>.ZERO;
+	}
+
+	/**
+	 * Returns `this` normalized to length 1.0 and the length of `this`.
+	 *
+	 * If `this` is zero length then `[<%= type %>.X, 0.0]` is returned.
+	 */
+	normalizeAndLength(): [<%= type %>, number] {
+		const length = this.length();
+		const rcp = 1 / length;
+
+		return Number.isFinite(rcp) && rcp > 0 ? [this.mul(rcp), length] : [<%= type %>.X, 0];
+	}
+
+	/**
+	 * Returns whether `this` is length `1.0` or not.
+	 *
+	 * Uses a precision threshold of approximately `1e-4`.
+	 */
+	isNormalized(): boolean {
+		return Math.abs(this.lengthSquared() - 1) <= 2e-4;
+	}
+
+	/**
+	 * Returns the vector projection of `this` onto `rhs`.
+	 *
+	 * `rhs` must be of non-zero length.
+	 */
+	projectOnto(rhs: <%= type %>): <%= type %> {
+		return rhs.mul(this.dot(rhs) / rhs.dot(rhs));
+	}
+
+	/**
+	 * Returns the vector rejection of `this` from `rhs`.
+	 *
+	 * The vector rejection is the vector perpendicular to the projection of `this` onto
+	 * `rhs`, in rhs words the result of `this.sub(this.projectOnto(rhs))`.
+	 *
+	 * `rhs` must be of non-zero length.
+	 */
+	rejectFrom(rhs: <%= type %>): <%= type %> {
+		const scale = this.dot(rhs) / rhs.dot(rhs);
+
+		return new <%= type %>(<%= each(value => `this.${value} - rhs.${value} * scale`) %>);
+	}
+
+	/**
+	 * Returns the vector projection of `this` onto `rhs`.
+	 *
+	 * `rhs` must be normalized.
+	 */
+	projectOntoNormalized(rhs: <%= type %>): <%= type %> {
+		return rhs.mul(this.dot(rhs));
+	}
+
+	/**
+	 * Returns the vector rejection of `this` from `rhs`.
+	 *
+	 * The vector rejection is the vector perpendicular to the projection of `this` onto
+	 * `rhs`, in rhs words the result of `this.sub(this.projectOnto(rhs))`.
+	 *
+	 * `rhs` must be normalized.
+	 */
+	rejectFromNormalized(rhs: <%= type %>): <%= type %> {
+		const scale = this.dot(rhs);
+
+		return new <%= type %>(<%= each(value => `this.${value} - rhs.${value} * scale`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the nearest integer to a number for each element of `this`.
+	 * Round half-way cases away from 0.0.
+	 */
+	round(): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value} < 0 ? -Math.round(-this.${value}) : Math.round(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the largest integer less than or equal to a number for each
+	 * element of `this`.
+	 */
+	floor(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.floor(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the smallest integer greater than or equal to a number for
+	 * each element of `this`.
+	 */
+	ceil(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.ceil(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the integer part each element of `this`. This means numbers are
+	 * always truncated towards zero.
+	 */
+	trunc(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.trunc(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing `0.0` if `rhs < this` and 1.0 otherwise.
+	 *
+	 * Similar to glsl's step(edge, x), which translates into edge.step(x)
+	 */
+	step(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= each(value => `rhs.${value} < this.${value} ? 0 : 1`) %>);
+	}
+
+	/**
+	 * Performs Hermite interpolation between `0.0` and `1.0` using `x` normalized to `[edge0, edge1]`.
+	 *
+	 * This is equivalent to `t * t * (3.0 - 2.0 * t)`, where `t` is clamped to `[0.0, 1.0]`.
+	 * Results are undefined if any element of `edge0` is greater than or equal to the corresponding
+	 * element of `edge1`.
+	 */
+	smoothstep(edge0: <%= type %>, edge1: <%= type %>): <%= type %> {
+<% for (const value of properties) { %>
+		const <%= value %> = Math.min(Math.max((this.<%= value %> - edge0.<%= value %>) / (edge1.<%= value %> - edge0.<%= value %>), 0), 1);
+<% } %>
+
+		return new <%= type %>(<%= each(value => `${value} * ${value} * (3 - 2 * ${value})`) %>);
+	}
+
+	/** Returns a vector containing all elements of `this` clamped to the range of `[0, 1]`. */
+	saturate(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.min(Math.max(this.${value}, 0), 1)`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the fractional part of the vector as `this.sub(this.trunc())`.
+	 *
+	 * Note that this differs from the GLSL implementation of `fract` which returns
+	 * `this.sub(this.floor())`.
+	 *
+	 * Note that this is fast but not precise for large numbers.
+	 */
+	fract(): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value} - Math.trunc(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the fractional part of the vector as `this.sub(this.floor())`.
+	 *
+	 * Note that this differs from the Rust implementation of `fract` which returns
+	 * `this.sub(this.trunc())`.
+	 *
+	 * Note that this is fast but not precise for large numbers.
+	 */
+	fractGl(): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value} - Math.floor(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing `e^this` (the exponential function) for each element of
+	 * `this`.
+	 */
+	exp(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.exp(this.${value})`) %>);
+	}
+
+	/** Returns a vector containing `2^this` for each element of `this`. */
+	exp2(): <%= type %> {
+		return new <%= type %>(<%= each(value => `2 ** this.${value}`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the natural logarithm for each element of `this`.
+	 * This returns NaN when the element is negative and negative infinity when the element is zero.
+	 */
+	ln(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.log(this.${value})`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the base 2 logarithm for each element of `this`.
+	 * This returns NaN when the element is negative and negative infinity when the element is zero.
+	 */
+	log2(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.log2(this.${value})`) %>);
+	}
+
+	/** Returns a vector containing each element of `this` raised to the power of `n`. */
+	powf(n: number): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value} ** n`) %>);
+	}
+
+	/**
+	 * Returns a vector containing the square root for each element of `this`.
+	 * This returns NaN when the element is negative.
+	 */
+	sqrt(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.sqrt(this.${value})`) %>);
+	}
+
+	/** Returns a vector containing the cosine for each element of `this`. */
+	cos(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.cos(this.${value})`) %>);
+	}
+
+	/** Returns a vector containing the sine for each element of `this`. */
+	sin(): <%= type %> {
+		return new <%= type %>(<%= each(value => `Math.sin(this.${value})`) %>);
+	}
+
+	/** Returns a tuple of two vectors containing the sine and cosine for each element of `this`. */
+	sinCos(): [<%= type %>, <%= type %>] {
+		return [
+			new <%= type %>(<%= each(value => `Math.sin(this.${value})`) %>),
+			new <%= type %>(<%= each(value => `Math.cos(this.${value})`) %>),
+		];
+	}
+
+	/** Returns a vector containing the reciprocal `1.0/n` of each element of `this`. */
+	recip(): <%= type %> {
+		return new <%= type %>(<%= each(value => `1 / this.${value}`) %>);
+	}
+
+	/**
+	 * Performs a linear interpolation between `this` and `rhs` based on the value `s`, using the
+	 * form `this.mul(1.0 - s).add(rhs.mul(s))`.
+	 *
+	 * When `s` is `0.0`, the result will be equal to `this`. When `s` is `1.0`, the result will
+	 * be equal to `rhs`. When `s` is outside of the range `[0, 1]`, the result is linearly
+	 * extrapolated.
+	 *
+	 * The result is guaranteed to be `this` at `s == 0.0` and `rhs` at `s == 1.0`, even when the
+	 * values differ greatly in magnitude, but it is not monotonic in `s` for nearly equal inputs
+	 * and may not preserve equal inputs exactly. Consider `lerpMonotonic()`
+	 * instead when interpolating between values that may be equal or nearly equal.
+	 */
+	lerp(rhs: <%= type %>, s: number): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value} * (1 - s) + rhs.${value} * s`) %>);
+	}
+
+	/**
+	 * Performs a linear interpolation between `this` and `rhs` based on the value `s`, using the
+	 * monotonic form `this.add(rhs.sub(this).mul(s))`.
+	 *
+	 * When `s` is `0.0`, the result will be equal to `this`. When `s` is `1.0`, the result will
+	 * be equal to `rhs`. When `s` is outside of the range `[0, 1]`, the result is linearly
+	 * extrapolated.
+	 *
+	 * Prefer this over `lerp()` when interpolating between values that may be equal or
+	 * nearly equal: the result is monotonic in `s` and equal inputs are preserved exactly, avoiding
+	 * the rounding jitter that `lerp()` can introduce. The tradeoff is that
+	 * `rhs.sub(this)` is evaluated first, so this is less accurate than `lerp()` when
+	 * `this` and `rhs` differ greatly in magnitude, and overflows to infinity when they have
+	 * opposite signs and large magnitudes.
+	 */
+	lerpMonotonic(rhs: <%= type %>, s: number): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value} + (rhs.${value} - this.${value}) * s`) %>);
+	}
+
+	/**
+	 * Moves towards `rhs` based on the value `d`.
+	 *
+	 * When `d` is `0.0`, the result will be equal to `this`. When `d` is equal to
+	 * `this.distance(rhs)`, the result will be equal to `rhs`. Will not go past `rhs`.
+	 */
+	moveTowards(rhs: <%= type %>, d: number): <%= type %> {
+		const len = this.distance(rhs);
+
+		if (len <= d || len <= 1e-4) {
+			return rhs.clone();
+		}
+
+		return new <%= type %>(<%= each(value => `this.${value} + ((rhs.${value} - this.${value}) / len) * d`) %>);
+	}
+
+	/**
+	 * Calculates the midpoint between `this` and `rhs`.
+	 *
+	 * The midpoint is the average of, or halfway point between, two vectors.
+	 * `a.midpoint(b)` should yield the same result as `a.lerp(b, 0.5)`
+	 * while being slightly cheaper to compute.
+	 */
+	midpoint(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= each(value => `(this.${value} + rhs.${value}) * 0.5`) %>);
+	}
+
+	/**
+	 * Returns true if the absolute difference of all elements between `this` and `rhs` is
+	 * less than or equal to `maxAbsDiff`.
+	 *
+	 * This can be used to compare if two vectors contain similar elements. It works best when
+	 * comparing with a known value. The `maxAbsDiff` that should be used used depends on
+	 * the values being compared against.
+	 *
+	 * For more see
+	 * [comparing floating point numbers](https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/).
+	 */
+	absDiffEq(rhs: <%= type %>, maxAbsDiff: number): boolean {
+		return <%= each(value => `Math.abs(this.${value} - rhs.${value}) <= maxAbsDiff`, ' && ') %>;
+	}
+
+<% const scaledBy = (k) => each(value => `(this.${value} / length) * ${k}`); %>
+	/** Returns a vector with a length no less than `min` and no more than `max`. */
+	clampLength(min: number, max: number): <%= type %> {
+		const lengthSq = this.lengthSquared();
+
+		if (lengthSq < min * min) {
+			const length = Math.sqrt(lengthSq);
+
+			return new <%= type %>(<%= scaledBy('min') %>);
+		}
+
+		if (lengthSq > max * max) {
+			const length = Math.sqrt(lengthSq);
+
+			return new <%= type %>(<%= scaledBy('max') %>);
+		}
+
+		return this.clone();
+	}
+
+	/** Returns a vector with a length no more than `max`. */
+	clampLengthMax(max: number): <%= type %> {
+		const lengthSq = this.lengthSquared();
+
+		if (lengthSq > max * max) {
+			const length = Math.sqrt(lengthSq);
+
+			return new <%= type %>(<%= scaledBy('max') %>);
+		}
+
+		return this.clone();
+	}
+
+	/** Returns a vector with a length no less than `min`. */
+	clampLengthMin(min: number): <%= type %> {
+		const lengthSq = this.lengthSquared();
+
+		if (lengthSq < min * min) {
+			const length = Math.sqrt(lengthSq);
+
+			return new <%= type %>(<%= scaledBy('min') %>);
+		}
+
+		return this.clone();
+	}
+
+	/** Computes `(this * a) + b` element-wise. */
+	mulAdd(a: <%= type %>, b: <%= type %>): <%= type %> {
+		return new <%= type %>(<%= each(value => `this.${value} * a.${value} + b.${value}`) %>);
+	}
+
+	/**
+	 * Returns the reflection vector for a given incident vector `this` and surface normal
+	 * `normal`.
+	 *
+	 * `normal` must be normalized.
+	 */
+	reflect(normal: <%= type %>): <%= type %> {
+		const scale = 2 * this.dot(normal);
+
+		return new <%= type %>(<%= each(value => `this.${value} - scale * normal.${value}`) %>);
+	}
+
+	/**
+	 * Returns the refraction direction for a given incident vector `this`, surface normal
+	 * `normal` and ratio of indices of refraction, `eta`. When total internal reflection occurs,
+	 * a zero vector will be returned.
+	 *
+	 * `this` and `normal` must be normalized.
+	 */
+	refract(normal: <%= type %>, eta: number): <%= type %> {
+		const nDotI = normal.dot(this);
+		const k = 1 - eta * eta * (1 - nDotI * nDotI);
+
+		if (k >= 0) {
+			const scale = eta * nDotI + Math.sqrt(k);
+
+			return new <%= type %>(<%= each(value => `eta * this.${value} - scale * normal.${value}`) %>);
+		}
+
+		return <%= type %>.ZERO;
+	}
+
+<% if (type === "Vec2") { %>
+	/**
+	 * Creates a 2D vector containing `[Math.cos(angle), Math.sin(angle)]`. This can be used in
+	 * conjunction with the `rotate()` method, e.g.
+	 * `Vec2.fromAngle(Math.PI).rotate(Vec2.Y)` will create the vector `[-1, 0]`
+	 * and rotate `Vec2.Y` around it returning `Vec2.Y.neg()`.
+	 */
+	static fromAngle(angle: number): Vec2 {
+		return new Vec2(Math.cos(angle), Math.sin(angle));
+	}
+
+	/**
+	 * Returns the angle (in radians) of this vector in the range `[-π, +π]`.
+	 *
+	 * The input does not need to be a unit vector however it must be non-zero.
+	 */
+	toAngle(): number {
+		return Math.atan2(this.y, this.x);
+	}
+
+	/**
+	 * Returns the angle of rotation (in radians) from `this` to `rhs` in the range `[-π, +π]`.
+	 *
+	 * The inputs do not need to be unit vectors however they must be non-zero.
+	 *
+	 * The returned angle can be used with `rotateAngle()`, e.g.
+	 * `this.rotateAngle(this.angleTo(rhs))` will be equal to `rhs`.
+	 */
+	angleTo(rhs: Vec2): number {
+		const cos = this.dot(rhs) / Math.sqrt(this.lengthSquared() * rhs.lengthSquared());
+		const perpDot = this.perpDot(rhs);
+
+		return Math.acos(Math.min(Math.max(cos, -1), 1)) * <%= signum('perpDot') %>;
+	}
+
+	/** Returns a vector that is equal to `this` rotated by 90 degrees. */
+	perp(): Vec2 {
+		return new Vec2(-this.y, this.x);
+	}
+
+	/**
+	 * The perpendicular dot product of `this` and `rhs`.
+	 * Also known as the wedge product, 2D cross product, and determinant.
+	 */
+	perpDot(rhs: Vec2): number {
+		return this.x * rhs.y - this.y * rhs.x;
+	}
+
+	/**
+	 * Returns `rhs` rotated by the angle of `this`. If `this` is normalized,
+	 * then this just rotation. This is what you usually want. Otherwise,
+	 * it will be like a rotation with a multiplication by `this`'s length.
+	 *
+	 * This can be used in conjunction with the `fromAngle()` method, e.g.
+	 * `Vec2.fromAngle(Math.PI).rotate(Vec2.Y)` will create the vector `[-1, 0]`
+	 * and rotate `Vec2.Y` around it returning `Vec2.Y.neg()`.
+	 */
+	rotate(rhs: Vec2): Vec2 {
+		return new Vec2(this.x * rhs.x - this.y * rhs.y, this.y * rhs.x + this.x * rhs.y);
+	}
+
+	/**
+	 * Rotates `this` by `angle` (in radians), equivalent to
+	 * `this.rotate(Vec2.fromAngle(angle))`.
+	 */
+	rotateAngle(angle: number): Vec2 {
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
+
+		return new Vec2(this.x * cos - this.y * sin, this.y * cos + this.x * sin);
+	}
+
+	/**
+	 * Rotates towards `rhs` up to `maxAngle` (in radians).
+	 *
+	 * When `maxAngle` is `0.0`, the result will be equal to `this`. When `maxAngle` is equal to
+	 * `Math.abs(this.angleTo(rhs))`, the result will be parallel to `rhs`. If `maxAngle` is negative,
+	 * rotates towards the exact opposite of `rhs`. Will not go past the target.
+	 */
+	rotateTowards(rhs: Vec2, maxAngle: number): Vec2 {
+		const a = this.angleTo(rhs);
+		const absA = Math.abs(a);
+		const angle = Math.min(Math.max(maxAngle, absA - Math.PI), absA) * <%= signum('a') %>;
+		const cos = Math.cos(angle);
+		const sin = Math.sin(angle);
+
+		return new Vec2(cos * this.x - sin * this.y, sin * this.x + cos * this.y);
+	}
+
+<% } %>
+<% if (type === "Vec3" || type === "Vec4") { %>
+<% if (type === "Vec3") { %>
+	/**
+	 * Returns the angle (in radians) between two vectors in the range `[0, +π]`.
+	 *
+	 * For the full rotation between two vectors as a quaternion, see
+	 * `Quat.fromRotationArc()`.
+	 *
+	 * The inputs do not need to be unit vectors however they must be non-zero.
+	 */
+<% } %>
+	angleBetween(rhs: <%= type %>): number {
+		const cos = this.dot(rhs) / Math.sqrt(this.lengthSquared() * rhs.lengthSquared());
+
+		return Math.acos(Math.min(Math.max(cos, -1), 1));
+	}
+
+<% } %>
+<% if (type === "Vec3") { %>
+	/**
+	 * Returns the signed angle (in radians) from `this` to `rhs` around `axis`
+	 * in the range `[-π, +π]`.
+	 *
+	 * The `axis` must be a unit vector. The angle follows the right-hand rule
+	 * around `axis` and can be used with `rotateAxis()`, e.g.
+	 * `this.rotateAxis(axis, this.angleTo(rhs, axis))` will be equal to `rhs`.
+	 *
+	 * For the unsigned angle without a reference axis, see `angleBetween()`.
+	 *
+	 * The inputs do not need to be unit vectors however they must be non-zero.
+	 */
+	angleTo(rhs: Vec3, axis: Vec3): number {
+		const x = this.y * rhs.z - rhs.y * this.z;
+		const y = this.z * rhs.x - rhs.z * this.x;
+		const z = this.x * rhs.y - rhs.x * this.y;
+
+		return Math.atan2(x * axis.x + y * axis.y + z * axis.z, this.dot(rhs));
+	}
+
+	/** Rotates around the x axis by `angle` (in radians). */
+	rotateX(angle: number): Vec3 {
+		const sina = Math.sin(angle);
+		const cosa = Math.cos(angle);
+
+		return new Vec3(this.x, this.y * cosa - this.z * sina, this.y * sina + this.z * cosa);
+	}
+
+	/** Rotates around the y axis by `angle` (in radians). */
+	rotateY(angle: number): Vec3 {
+		const sina = Math.sin(angle);
+		const cosa = Math.cos(angle);
+
+		return new Vec3(this.x * cosa + this.z * sina, this.y, this.x * -sina + this.z * cosa);
+	}
+
+	/** Rotates around the z axis by `angle` (in radians). */
+	rotateZ(angle: number): Vec3 {
+		const sina = Math.sin(angle);
+		const cosa = Math.cos(angle);
+
+		return new Vec3(this.x * cosa - this.y * sina, this.x * sina + this.y * cosa, this.z);
+	}
+
+	/**
+	 * Rotates around `axis` by `angle` (in radians).
+	 *
+	 * The axis must be a unit vector.
+	 */
+	rotateAxis(axis: Vec3, angle: number): Vec3 {
+		return Vec3.#rotateAxisAngle(this, axis.x, axis.y, axis.z, angle, 1);
+	}
+
+	/**
+	 * Rotates towards `rhs` up to `maxAngle` (in radians).
+	 *
+	 * When `maxAngle` is `0.0`, the result will be equal to `this`. When `maxAngle` is equal to
+	 * `this.angleBetween(rhs)`, the result will be parallel to `rhs`. If `maxAngle` is negative,
+	 * rotates towards the exact opposite of `rhs`. Will not go past the target.
+	 */
+	rotateTowards(rhs: Vec3, maxAngle: number): Vec3 {
+		const angleBetween = this.angleBetween(rhs);
+		const angle = Math.min(Math.max(maxAngle, angleBetween - Math.PI), angleBetween);
+		const x = this.y * rhs.z - rhs.y * this.z;
+		const y = this.z * rhs.x - rhs.z * this.x;
+		const z = this.x * rhs.y - rhs.x * this.y;
+		const lengthSquared = x * x + y * y + z * z;
+		const rcp = 1 / Math.sqrt(lengthSquared);
+
+		if (Number.isFinite(rcp) && rcp > 0) {
+			return Vec3.#rotateAxisAngle(this, x * rcp, y * rcp, z * rcp, angle, 1);
+		}
+
+		const axis = this.anyOrthogonalVector().normalize();
+
+		return Vec3.#rotateAxisAngle(this, axis.x, axis.y, axis.z, angle, 1);
+	}
+
+	/**
+	 * Returns some vector that is orthogonal to the given one.
+	 *
+	 * The input vector must be finite and non-zero.
+	 *
+	 * The output vector is not necessarily unit length. For that use
+	 * `anyOrthonormalVector()` instead.
+	 */
+	anyOrthogonalVector(): Vec3 {
+		if (Math.abs(this.x) > Math.abs(this.y)) {
+			return new Vec3(-this.z, 0, this.x);
+		}
+
+		return new Vec3(0, this.z, -this.y);
+	}
+
+	/**
+	 * Returns any unit vector that is orthogonal to the given one.
+	 *
+	 * The input vector must be unit length.
+	 */
+	anyOrthonormalVector(): Vec3 {
+		const sign = <%= signum('this.z') %>;
+		const a = -1 / (sign + this.z);
+		const b = this.x * this.y * a;
+
+		return new Vec3(b, sign + this.y * this.y * a, -this.y);
+	}
+
+	/**
+	 * Given a unit vector return two other vectors that together form a right-handed orthonormal
+	 * basis. That is, all three vectors are orthogonal to each other and are normalized.
+	 */
+	anyOrthonormalPair(): [Vec3, Vec3] {
+		const sign = <%= signum('this.z') %>;
+		const a = -1 / (sign + this.z);
+		const b = this.x * this.y * a;
+
+		return [
+			new Vec3(1 + sign * this.x * this.x * a, sign * b, -sign * this.x),
+			new Vec3(b, sign + this.y * this.y * a, -this.y),
+		];
+	}
+
+	/**
+	 * Performs a spherical linear interpolation between `this` and `rhs` based on the value `s`.
+	 *
+	 * When `s` is `0.0`, the result will be equal to `this`.  When `s` is `1.0`, the result
+	 * will be equal to `rhs`. When `s` is outside of range `[0, 1]`, the result is linearly
+	 * extrapolated.
+	 */
+	slerp(rhs: Vec3, s: number): Vec3 {
+		const selfLength = this.length();
+		const rhsLength = rhs.length();
+		const dot = this.dot(rhs) / (selfLength * rhsLength);
+
+		if (Math.abs(dot) < 1 - 3e-7) {
+			const theta = Math.acos(dot);
+			const t1 = Math.sin(theta * (1 - s));
+			const t2 = Math.sin(theta * s);
+			const resultLength = selfLength + (rhsLength - selfLength) * s;
+			const selfScale = resultLength / selfLength;
+			const rhsScale = resultLength / rhsLength;
+			const sinThetaRecip = 1 / Math.sin(theta);
+
+			return new Vec3(<%= each(value => `(this.${value} * selfScale * t1 + rhs.${value} * rhsScale * t2) * sinThetaRecip`) %>);
+		}
+
+		if (dot < 0) {
+			const axis = this.anyOrthogonalVector().normalize();
+			const resultLength = selfLength + (rhsLength - selfLength) * s;
+
+			return Vec3.#rotateAxisAngle(this, axis.x, axis.y, axis.z, Math.PI * s, resultLength / selfLength);
+		}
+
+		return this.lerp(rhs, s);
+	}
+
+<% } %>
+	div(rhs: <%= type %> | number): <%= type %> {
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= each(value => `this.${value} / rhs`) %>);
+		}
+
+		return new <%= type %>(<%= each(value => `this.${value} / rhs.${value}`) %>);
+	}
+
+	mul(rhs: <%= type %> | number): <%= type %> {
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= each(value => `this.${value} * rhs`) %>);
+		}
+
+		return new <%= type %>(<%= each(value => `this.${value} * rhs.${value}`) %>);
+	}
+
+	add(rhs: <%= type %> | number): <%= type %> {
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= each(value => `this.${value} + rhs`) %>);
+		}
+
+		return new <%= type %>(<%= each(value => `this.${value} + rhs.${value}`) %>);
+	}
+
+	sub(rhs: <%= type %> | number): <%= type %> {
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= each(value => `this.${value} - rhs`) %>);
+		}
+
+		return new <%= type %>(<%= each(value => `this.${value} - rhs.${value}`) %>);
+	}
+
+	rem(rhs: <%= type %> | number): <%= type %> {
+		if (typeof rhs === "number") {
+			return new <%= type %>(<%= each(value => `this.${value} % rhs`) %>);
+		}
+
+		return new <%= type %>(<%= each(value => `this.${value} % rhs.${value}`) %>);
+	}
+
+	neg(): <%= type %> {
+		return new <%= type %>(<%= each(value => `-this.${value}`) %>);
+	}
+
+<% for (const [name, op] of [["add", "+"], ["sub", "-"], ["mul", "*"], ["div", "/"], ["rem", "%"]]) { %>
+	<%= name %>Assign(rhs: <%= type %> | number): this {
+		if (typeof rhs === "number") {
+<% for (const value of properties) { %>
+			this.<%= value %> <%= op %>= rhs;
+<% } %>
+
+			return this;
+		}
+
+<% for (const value of properties) { %>
+		this.<%= value %> <%= op %>= rhs.<%= value %>;
+<% } %>
+
+		return this;
+	}
+
+<% } %>
+	eq(rhs: <%= type %> | number): boolean {
+		if (typeof rhs === "number") {
+			return <%= each(value => `this.${value} === rhs`, ' && ') %>;
+		}
+
+		return <%= each(value => `this.${value} === rhs.${value}`, ' && ') %>;
+	}
+
+	ne(rhs: <%= type %> | number): boolean {
+		if (typeof rhs === "number") {
+			return <%= each(value => `this.${value} !== rhs`, ' || ') %>;
+		}
+
+		return <%= each(value => `this.${value} !== rhs.${value}`, ' || ') %>;
+	}
+
+	approxEq(rhs: <%= type %> | number): boolean {
+		const threshold = 1e-6;
+
+		if (typeof rhs === "number") {
+			return <%= each(value => `Math.abs(this.${value} - rhs) < threshold`, ' && ') %>;
+		}
+
+		return <%= each(value => `Math.abs(this.${value} - rhs.${value}) < threshold`, ' && ') %>;
+	}
+
+	toString() {
+			return `<%= type %>(<%= each(value => "${this.<property>}".replace("<property>", value)) %>)`;
+	}
+<% if (type === "Vec3") { %>
+
+	static #rotateAxisAngle(v: Vec3, axisX: number, axisY: number, axisZ: number, angle: number, scale: number): Vec3 {
+		const sin = Math.sin(angle * 0.5);
+		const x = axisX * sin;
+		const y = axisY * sin;
+		const z = axisZ * sin;
+		const w = Math.cos(angle * 0.5);
+		const k0 = w * w - (x * x + y * y + z * z);
+		const k1 = (v.x * x + v.y * y + v.z * z) * 2;
+		const k2 = w * 2;
+
+		return new Vec3(
+			(v.x * k0 + x * k1 + (y * v.z - z * v.y) * k2) * scale,
+			(v.y * k0 + y * k1 + (z * v.x - x * v.z) * k2) * scale,
+			(v.z * k0 + z * k1 + (x * v.y - y * v.x) * k2) * scale,
+		);
+	}
+<% } %>
+}
+
+/** Creates a <%= dim %>-dimensional vector. */
+export function <%= type.toLowerCase() %>(<%= each(value => `${value}: number`) %>): <%= type %> {
+	return new <%= type %>(<%= each(value => value) %>);
+}

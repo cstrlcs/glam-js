@@ -1,0 +1,12 @@
+{
+  "prettier.enable": false,
+  "oxc.fmt.configPath": "oxfmt.config.ts",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSaveMode": "file",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "always",
+    "source.organizeImports": "never"
+  },
+  "oxc.typeAware": true
+}

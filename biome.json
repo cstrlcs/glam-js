@@ -1,5 +1,0 @@
-{
-	"extends": [
-		"./node_modules/@cstrlcs/configs/biome.json"
-	]
-}

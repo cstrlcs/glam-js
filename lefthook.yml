@@ -1,9 +1,11 @@
 pre-commit:
   commands:
-    release:
-      run: bun release
-    check:
-      glob: "*.{ts,json}"
-      run: bunx biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+    build:
+      run: bun run build
+    lint:
+      glob: "*.ts"
+      run: bunx oxlint --type-aware {staged_files}
+    format:
+      run: bunx oxfmt --check --no-error-on-unmatched-pattern {staged_files}
     test:
       run: bun test

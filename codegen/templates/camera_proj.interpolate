@@ -1,0 +1,150 @@
+
+
+<%
+	const { isRh, label: handedness } = it.handedness;
+	const { name, label, ndcZ, ndcY, isZo, yFlip } = it.api;
+	const isOpenGl = name === "opengl";
+	const output = `Expects a ${handedness} Y-up view space input.
+ * Outputs NDC with Z in ${ndcZ} and ${ndcY}.`;
+	const yy = (value) => (yFlip ? `-${value}` : value);
+	const zw = isRh ? "-1" : "1";
+	const perspective = {
+		"true,true": ["-far * zRangeInv", "-near * far * zRangeInv"],
+		"false,true": ["far * zRangeInv", "-near * far * zRangeInv"],
+		"true,false": ["-(far + near) * zRangeInv", "-2 * far * near * zRangeInv"],
+		"false,false": ["(far + near) * zRangeInv", "-2 * far * near * zRangeInv"],
+	}[`${isRh},${isZo}`];
+	const orthographic = {
+		"true,true": "-depthInv",
+		"false,true": "depthInv",
+		"true,false": "-2 * depthInv",
+		"false,false": "2 * depthInv",
+	}[`${isRh},${isZo}`];
+	const frustum = {
+		"true,true": ["-far * invDepth", "-(far * near) * invDepth"],
+		"false,true": ["far * invDepth", "-(far * near) * invDepth"],
+		"true,false": ["-(far + near) * invDepth", "-(2 * far * near) * invDepth"],
+		"false,false": ["(far + near) * invDepth", "-(2 * far * near) * invDepth"],
+	}[`${isRh},${isZo}`];
+%>
+import { Mat4 } from "../../../Mat4.js";
+import { Vec4 } from "../../../Vec4.js";
+
+/**
+ * Creates a perspective projection matrix for use with <%= label %>.
+ *
+ * <%= output %>
+<% if (isOpenGl && isRh) { %>
+ *
+ * This is the OpenGL `gluPerspective` equivalent.
+<% } %>
+ */
+export function perspective(verticalFov: number, aspectRatio: number, near: number, far: number): Mat4 {
+	const sinFov = Math.sin(0.5 * verticalFov);
+	const cosFov = Math.cos(0.5 * verticalFov);
+	const h = cosFov / sinFov;
+	const zRangeInv = 1 / (far - near);
+
+	return new Mat4(
+		new Vec4(h / aspectRatio, 0, 0, 0),
+		new Vec4(0, <%= yy("h") %>, 0, 0),
+		new Vec4(0, 0, <%= perspective[0] %>, <%= zw %>),
+		new Vec4(0, 0, <%= perspective[1] %>, 0),
+	);
+}
+
+<% if (!isOpenGl) { %>
+/**
+ * Creates an infinite perspective projection matrix for use with <%= label %>.
+ *
+ * Like `perspective`, but with an infinite value for `far`. Points at distance
+ * `near` map to depth `0`; as distance approaches infinity, depth approaches `1`.
+ *
+ * <%= output %>
+ */
+export function perspectiveInfinite(verticalFov: number, aspectRatio: number, near: number): Mat4 {
+	const sinFov = Math.sin(0.5 * verticalFov);
+	const cosFov = Math.cos(0.5 * verticalFov);
+	const h = cosFov / sinFov;
+
+	return new Mat4(
+		new Vec4(h / aspectRatio, 0, 0, 0),
+		new Vec4(0, <%= yy("h") %>, 0, 0),
+		new Vec4(0, 0, <%= zw %>, <%= zw %>),
+		new Vec4(0, 0, <%= isZo ? "-near" : "-2 * near" %>, 0),
+	);
+}
+
+/**
+ * Creates an infinite perspective projection matrix with reversed depth for use with
+ * <%= label %>.
+ *
+ * Maps `near` to depth `1` and infinity to depth `0`.
+ *
+ * Reversed Z improves depth precision when used with a floating-point depth buffer.
+ *
+ * <%= output %>
+ */
+export function perspectiveInfiniteReverse(verticalFov: number, aspectRatio: number, near: number): Mat4 {
+	const sinFov = Math.sin(0.5 * verticalFov);
+	const cosFov = Math.cos(0.5 * verticalFov);
+	const h = cosFov / sinFov;
+
+	return new Mat4(
+		new Vec4(h / aspectRatio, 0, 0, 0),
+		new Vec4(0, <%= yy("h") %>, 0, 0),
+		new Vec4(0, 0, 0, <%= zw %>),
+		new Vec4(0, 0, near, 0),
+	);
+}
+
+<% } %>
+/**
+ * Creates an orthographic projection matrix for use with <%= label %>.
+ *
+ * <%= output %>
+<% if (isOpenGl && isRh) { %>
+ *
+ * This is the OpenGL `glOrtho` equivalent.
+<% } %>
+ */
+export function orthographic(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
+	const widthInv = 1 / (right - left);
+	const heightInv = 1 / (top - bottom);
+	const depthInv = 1 / (far - near);
+
+	return new Mat4(
+		new Vec4(widthInv + widthInv, 0, 0, 0),
+		new Vec4(0, <%= yFlip ? "-(heightInv + heightInv)" : "heightInv + heightInv" %>, 0, 0),
+		new Vec4(0, 0, <%= orthographic %>, 0),
+		new Vec4(-(left + right) * widthInv, -(top + bottom) * heightInv, <%= isZo ? "-near * depthInv" : "-(far + near) * depthInv" %>, 1),
+	);
+}
+
+/**
+<% if (isOpenGl) { %>
+ * Creates a perspective projection matrix from a frustum for use with OpenGL.
+<% } else { %>
+ * Creates a perspective projection from a frustum for use with <%= label %>.
+<% } %>
+ *
+ * <%= output %>
+<% if (isOpenGl && isRh) { %>
+ *
+ * This is the OpenGL `glFrustum` equivalent.
+ * See <https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glFrustum.xml>
+<% } %>
+ */
+export function frustum(left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4 {
+	const invWidth = 1 / (right - left);
+	const invHeight = 1 / (top - bottom);
+	const invDepth = 1 / (far - near);
+	const twoNear = 2 * near;
+
+	return new Mat4(
+		new Vec4(twoNear * invWidth, 0, 0, 0),
+		new Vec4(0, <%= yFlip ? "-twoNear * invHeight" : "twoNear * invHeight" %>, 0, 0),
+		new Vec4((right + left) * invWidth, <%= yFlip ? "-(top + bottom) * invHeight" : "(top + bottom) * invHeight" %>, <%= frustum[0] %>, <%= zw %>),
+		new Vec4(0, 0, <%= frustum[1] %>, 0),
+	);
+}

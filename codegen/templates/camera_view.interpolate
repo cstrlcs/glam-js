@@ -1,0 +1,99 @@
+
+
+<%
+	const { isRh, label: handedness } = it.handedness;
+	const components = ["x", "y", "z"];
+	const transforms = `Transforms ${handedness} world space points into ${handedness} Y-up view space.`;
+	const sign = isRh ? "" : "-";
+	const forward = (at) => (at
+		? `const dx = center.x - eye.x;
+	const dy = center.y - eye.y;
+	const dz = center.z - eye.z;
+	const dLengthSquared = dx * dx + dy * dy + dz * dz;
+	const dRcp = 1 / Math.sqrt(dLengthSquared);
+	const fx = ${sign}dx * dRcp;
+	const fy = ${sign}dy * dRcp;
+	const fz = ${sign}dz * dRcp;`
+		: `const fx = ${sign}dir.x;
+	const fy = ${sign}dir.y;
+	const fz = ${sign}dir.z;`);
+	const axes = (at) => `${forward(at)}
+	const cx = fy * up.z - up.y * fz;
+	const cy = fz * up.x - up.z * fx;
+	const cz = fx * up.y - up.x * fy;
+	const sLengthSquared = cx * cx + cy * cy + cz * cz;
+	const sRcp = 1 / Math.sqrt(sLengthSquared);
+	const sx = cx * sRcp;
+	const sy = cy * sRcp;
+	const sz = cz * sRcp;
+	const ux = sy * fz - fy * sz;
+	const uy = sz * fx - fz * sx;
+	const uz = sx * fy - fx * sy;`;
+	const column = (component) => `s${component}, u${component}, -f${component}`;
+	const translation = ["-(eye.x * sx + eye.y * sy + eye.z * sz)", "-(eye.x * ux + eye.y * uy + eye.z * uz)", "eye.x * fx + eye.y * fy + eye.z * fz"];
+	const outputs = [
+		{
+			name: "Mat4",
+			article: "a",
+			kind: "view matrix",
+			eye: true,
+			value: `new Mat4(${components.map((c) => `new Vec4(${column(c)}, 0)`).join(", ")}, new Vec4(${translation.join(", ")}, 1))`,
+		},
+		{
+			name: "Affine3",
+			article: "an",
+			kind: "view transform",
+			eye: true,
+			value: `new Affine3(new Mat3(${components.map((c) => `new Vec3(${column(c)})`).join(", ")}), new Vec3(${translation.join(", ")}))`,
+		},
+		{
+			name: "Mat3",
+			article: "a",
+			kind: "view rotation (no translation)",
+			eye: false,
+			value: `new Mat3(${components.map((c) => `new Vec3(${column(c)})`).join(", ")})`,
+		},
+		{
+			name: "Quat",
+			article: "a",
+			kind: "view rotation",
+			eye: false,
+			value: `Quat.fromRotationAxes(${components.map((c) => `new Vec3(${column(c)})`).join(", ")})`,
+		},
+	];
+%>
+import { Affine3 } from "../../Affine3.js";
+import { Mat3 } from "../../Mat3.js";
+import { Mat4 } from "../../Mat4.js";
+import { Quat } from "../../Quat.js";
+import { Vec3 } from "../../Vec3.js";
+import { Vec4 } from "../../Vec4.js";
+
+<% for (const output of outputs) { %>
+/**
+ * Returns <%= output.article %> `<%= output.name %>` <%= output.kind %> from eye, focal point, and up.
+ *
+ * <%= transforms %>
+ */
+export function lookAt<%= output.name %>(eye: Vec3, center: Vec3, up: Vec3): <%= output.name %> {
+	<%= axes(true) %>
+
+	return <%= output.value %>;
+}
+
+/**
+<% if (output.eye) { %>
+ * Returns <%= output.article %> `<%= output.name %>` <%= output.kind %> from eye, forward direction, and up.
+<% } else { %>
+ * Returns <%= output.article %> `<%= output.name %>` <%= output.kind %> from direction and up.
+<% } %>
+ *
+ * <%= transforms %>
+ */
+export function lookTo<%= output.name %>(<%= output.eye ? "eye: Vec3, " : "" %>dir: Vec3, up: Vec3): <%= output.name %> {
+	<%= axes(false) %>
+
+	return <%= output.value %>;
+}
+
+<% } %>

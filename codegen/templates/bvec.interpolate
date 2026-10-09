@@ -1,0 +1,164 @@
+
+
+<% 
+	const properties = ["x", "y", "z", "w",].splice(0, it.length);
+	const type = `${it.name}${it.length}`;
+%>
+/** A <%= it.length %>-dimensional `bool` vector mask. */
+export class <%= type %> {
+<% for (const property of properties) { %>
+	declare <%= property %>: boolean;
+<% } %>
+
+	constructor(<%= properties.map(value => `${value}: boolean`).join(", ") %>) {
+<% for (const property of properties) { %>
+		this.<%= property %> = <%= property %>;
+<% } %>
+	}
+
+	/** All false. */
+	static get FALSE() {
+		return new <%= type %>(<%= properties.map(value => 'false').join(', ') %>);
+	}
+
+	/** All true. */
+	static get TRUE() {
+		return new <%= type %>(<%= properties.map(value => 'true').join(', ') %>);
+	}
+
+	/** Creates a new vector mask. */
+	static new(<%= properties.map(value => `${value}: boolean`).join(", ") %>): <%= type %> {
+		return new <%= type %>(<%= properties.join(', ') %>);
+	}
+
+	/** Creates a vector mask with all elements set to `v`. */
+	static splat(v: boolean): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => 'v').join(', ') %>);
+	}
+
+	/** Creates a new vector mask from a bool array. */
+	static fromArray(a: [<%= properties.map(() => 'boolean').join(', ') %>]): <%= type %> {
+		return new <%= type %>(<%= properties.map((_, index) => `a[${index}]`).join(', ') %>);
+	}
+
+	/**
+	 * Returns a bitmask with the lowest <%= it.length %> bits set from the elements of `this`.
+	 *
+	 * A true element results in a `1` bit and a false element in a `0` bit.  Element `x` goes
+	 * into the first lowest bit, element `y` into the second, etc.
+	 */
+	bitmask(): number {
+		return <%= properties.map((value, index) => `(this.${value} ? ${1 << index} : 0)`).join(' + ') %>;
+	}
+
+	/** Returns true if any of the elements are true, false otherwise. */
+	any(): boolean {
+		return <%= properties.map(value => `this.${value}`).join(' || ') %>;
+	}
+
+	/** Returns true if all the elements are true, false otherwise. */
+	all(): boolean {
+		return <%= properties.map(value => `this.${value}`).join(' && ') %>;
+	}
+
+	/**
+	 * Tests the value at `index`.
+	 *
+	 * Throws a `RangeError` if `index` is greater than <%= it.length - 1 %>.
+	 */
+	test(index: <%= [...Array(it.length).keys()].join(" | ") %>): boolean {
+		switch (index) {
+<% for (const [index, value] of properties.entries()) { %>
+			case <%= index %>: {
+				return this.<%= value %>;
+			}
+<% } %>
+			default: {
+				throw new RangeError("index out of bounds");
+			}
+		}
+	}
+
+	/**
+	 * Sets the element at `index`.
+	 *
+	 * Throws a `RangeError` if `index` is greater than <%= it.length - 1 %>.
+	 */
+	set(index: <%= [...Array(it.length).keys()].join(" | ") %>, value: boolean): void {
+		switch (index) {
+<% for (const [index, property] of properties.entries()) { %>
+			case <%= index %>: {
+				this.<%= property %> = value;
+
+				break;
+			}
+<% } %>
+			default: {
+				throw new RangeError("index out of bounds");
+			}
+		}
+	}
+
+	bitand(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const property of properties) { %>
+			this.<%= property %> && rhs.<%= property %>,
+<% } %>
+		);
+	}
+
+	bitor(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const property of properties) { %>
+			this.<%= property %> || rhs.<%= property %>,
+<% } %>
+		);
+	}
+
+	bitxor(rhs: <%= type %>): <%= type %> {
+		return new <%= type %>(
+<% for (const property of properties) { %>
+			this.<%= property %> !== rhs.<%= property %>,
+<% } %>
+		);
+	}
+
+<% for (const [name, symbol, assign] of [["bitand", "&", (p) => `this.${p} &&= rhs.${p};`], ["bitor", "|", (p) => `this.${p} ||= rhs.${p};`], ["bitxor", "^", (p) => `this.${p} = this.${p} !== rhs.${p};`]]) { %>
+	<%= name %>Assign(rhs: <%= type %>): this {
+<% for (const property of properties) { %>
+		<%= assign(property) %>
+<% } %>
+
+		return this;
+	}
+
+<% } %>
+	not(): <%= type %> {
+		return new <%= type %>(<%= properties.map(value => `!this.${value}`).join(', ') %>);
+	}
+
+	eq(rhs: <%= type %> | boolean): boolean {
+		if (typeof rhs === "boolean") {
+			return <%= properties.map(value => `this.${value} === rhs`).join(' && ') %>;
+		}
+
+		return <%= properties.map(value => `this.${value} === rhs.${value}`).join(' && ') %>;
+	}
+
+	ne(rhs: <%= type %> | boolean): boolean {
+		if (typeof rhs === "boolean") {
+			return <%= properties.map(value => `this.${value} !== rhs`).join(' || ') %>;
+		}
+
+		return <%= properties.map(value => `this.${value} !== rhs.${value}`).join(' || ') %>;
+	}
+
+	toString() {
+			return `<%= type %>(<%= properties.map(value => "${this.<property>}".replace("<property>", value)).join(', ') %>)`;
+	}
+}
+
+/** Creates a <%= it.length %>-dimensional `bool` vector mask. */
+export function <%= type.toLowerCase() %>(<%= properties.map(value => `${value}: boolean`).join(", ") %>): <%= type %> {
+	return new <%= type %>(<%= properties.join(', ') %>);
+}
